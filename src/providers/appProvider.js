@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import AppContext from './context';
+import {AppContext} from './context';
 
 class AppProvider extends Component {
     constructor(props) {

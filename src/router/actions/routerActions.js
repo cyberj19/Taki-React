@@ -1,6 +1,5 @@
 import Update from "../../providers/update";
 
-
 const setRoute = routeName => Update(({router})=> {
     const {route : currRoute} = router;
     return currRoute !==  routeName ? {
