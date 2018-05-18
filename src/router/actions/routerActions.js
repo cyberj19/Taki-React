@@ -1,6 +1,6 @@
 import Update from "../../providers/update";
 
-const setRoute = routeName => Update(({router})=> {
+export const setRoute = routeName => Update(({router})=> {
     const {route : currRoute} = router;
     return currRoute !==  routeName ? {
         router: {
@@ -8,5 +8,3 @@ const setRoute = routeName => Update(({router})=> {
             route: routeName
         }
     } : null});
-
-export default {setRoute};

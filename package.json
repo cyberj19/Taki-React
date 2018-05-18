@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
+    "start": "webpack && http-start",
     "build-watch": "webpack --watch"
   },
   "author": "Spivak Ofer",

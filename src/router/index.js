@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
 import routes from "../routes";
 import Connect from "../providers/connect";
-import {setRoute} from './actions/routerActions';
-
 
 const DEFAULT_ROUTE = 'main';
 
 class Router extends Component {
-    componentWillMount() {
-        setRoute(DEFAULT_ROUTE);
-    }
     getRouter() {
-        return routes[this.props.route];
+        return routes[this.props.route || DEFAULT_ROUTE];
     }
     render() {
         return this.getRouter();

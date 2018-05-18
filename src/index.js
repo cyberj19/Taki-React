@@ -6,11 +6,12 @@ import "./styles/style.css";
 import Router from "./router";
 import AppProvider from "./providers/appProvider";
 
+const component = (<AppProvider>
+    <Router/>
+</AppProvider>);
 
 /* Directly adding react element */
 render(
-    <AppProvider>
-        <Router/>
-    </AppProvider>,
+    component,
     document.getElementById("root")
 );
