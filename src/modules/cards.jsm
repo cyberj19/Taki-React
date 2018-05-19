@@ -1,15 +1,17 @@
 // card helper file
 // That file define the available cards for each group
+// each group is in a function to avoid referred arrays
 
 const CARDS = {
     STOP: "STOP",
     TAKI: "TAKI",
     PLUS: "+",
+    TWO: "2",
     COLOR: "COLOR"
 };
 
-const regularCards = [
-    "1", "2", "3", "4", "5", "6", "7", "8", "9", CARDS.PLUS, CARDS.STOP, CARDS.TAKI
+const regularCards =  [
+    "1", CARDS.TWO,"3", "4", "5", "6", "7", "8", "9", CARDS.PLUS, CARDS.STOP, CARDS.TAKI
 ];
 
 const unColoredCards = [
@@ -20,7 +22,6 @@ const cardsColors = [
     "red", "blue", "green", "yellow"
 ];
 
-const UCOLORED_COLOR = "none";
+const UNCOLORED_COLOR = "none";
 
-
-export default {CARDS, regularCards, unColoredCards, cardsColors, UCOLORED_COLOR};
+export { CARDS, regularCards, unColoredCards, cardsColors, UNCOLORED_COLOR };

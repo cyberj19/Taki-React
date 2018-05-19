@@ -3,12 +3,13 @@ import {render} from 'react-dom';
 import "./styles/pyro.css";
 import "./styles/style.css";
 
-import Router from "./router";
-import AppProvider from "./providers/appProvider";
+import GameManager from "./components/gameManager";
+/*import AppProvider from "./providers/appProvider";
 
 const component = (<AppProvider>
     <Router/>
-</AppProvider>);
+</AppProvider>);*/
+const component = <GameManager/>;
 
 /* Directly adding react element */
 render(

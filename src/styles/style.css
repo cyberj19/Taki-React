@@ -21,6 +21,10 @@ ul {
     user-select: none;
 }
 
+#root {
+    height: 100%;
+}
+
 @font-face {
     font-family: 'taki';
     src:  url('fonts/taki.eot?jbpx8e');
@@ -174,13 +178,13 @@ li.clock::before {
     transform: rotate(-54deg) translate(-29%, -22%);
 }
 
-.card[data-type]::before,
-.card[data-type]::after {
-    content: attr(data-type);
+.card[data-card-type]::before,
+.card[data-card-type]::after {
+    content: attr(data-card-type);
     color: inherit;
 
 }
-.card[data-type]::after {
+.card[data-card-type]::after {
     text-shadow: 11.5vw 16vw,
     11.6vw 16vw #000, 11.4vw 16vw #000, 11.6vw 16.1vw  #000, 11.4vw 16.1vw #000, 11.5vw 15.9vw #000, 11.4vw 15.9vw #000, 11.6vw 15.9vw #000, 11.6vw 16vw #000,
         -2px 0 #000, 0 -2px #000, 0 2px  #000, 2px 0 #000, 2px -2px #000, -2px -2px #000, -2px 2px #000, 2px 2px #000;
@@ -191,7 +195,7 @@ li.clock::before {
     -o-transform: rotate(0deg);
     transform: rotate(0deg);
 }
-.card[data-type]::before {
+.card[data-card-type]::before {
     text-align: center;
     font-size: 8vw;
     position: absolute;
@@ -204,21 +208,21 @@ li.clock::before {
     transform: translateY(-50%);
 }
 
-.card[data-type="TAKI"]::before,
-.card[data-type="TAKI"]::after {
+.card[data-card-type="TAKI"]::before,
+.card[data-card-type="TAKI"]::after {
     font-family: monospace;
     width: 1.5em;
     line-height: .7em;
     word-wrap: break-word;
 }
-.card[data-type="STOP"]::before,
-.card[data-type="STOP"]::after {
+.card[data-card-type="STOP"]::before,
+.card[data-card-type="STOP"]::after {
     font-family: 'taki' !important;
     content: "\e900";
 }
 
-.card[data-type="COLOR"]::before,
-.card[data-type="COLOR"]::after {
+.card[data-card-type="COLOR"]::before,
+.card[data-card-type="COLOR"]::after {
     content: '\2756';
 }
 
@@ -580,3 +584,66 @@ cursor: pointer;
 .player-stats.stats li:first-child {
     visibility: hidden;
 }
+
+
+
+/************************************/
+/*******        Games menu    *******/
+/************************************/
+.game-chooser {
+    position: relative;
+    display: inline-block;
+    width: 31%;
+    height: 150px;
+    background: rgba(255,255,255,.8);
+    margin: 1% 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    border-radius: 2px;
+    font-size: 22px;
+    padding: 5px;
+    cursor: pointer;
+    color: #736109;
+    overflow: hidden;
+}
+
+.game-chooser::before {
+    content: ".";
+    display: inline-block;
+    width: 100%;
+    color: transparent;
+    background: green;
+    font-size: 56px;
+    height: 70%;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+}
+
+.game-chooser::after {
+    content: attr(data-info);
+    background: rgba(255,255,255,0.9);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    transition: opacity 0.3s;
+}
+
+.game-chooser:hover::after {
+    opacity: 1;
+}
+.game-chooser--regular::before {
+    content: "T A K I";
+    color: #fff;
+    font-weight: bold;
+    overflow: hidden;
+    text-shadow: 2em 0.5em #f11717, -2em -0.5em #4296ff, -1.5em 0.5em #fff700, 1em 1em #b6fd25;
+}
+.game-chooser--tournament::before {
+    background: rgb(241,23,23);
+    background: -moz-linear-gradient(-45deg, rgba(241,23,23,1) 0%, rgba(255,247,0,1) 33%, rgba(66,150,255,1) 68%, rgba(182,253,37,1) 100%);
+    background: -webkit-linear-gradient(-45deg, rgba(241,23,23,1) 0%,rgba(255,247,0,1) 33%,rgba(66,150,255,1) 68%,rgba(182,253,37,1) 100%);
+    background: linear-gradient(135deg, rgba(241,23,23,1) 0%,rgba(255,247,0,1) 33%,rgba(66,150,255,1) 68%,rgba(182,253,37,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f11717', endColorstr='#b6fd25',GradientType=1 );
+}
+
