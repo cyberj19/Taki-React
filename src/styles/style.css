@@ -323,6 +323,23 @@ li.clock::before {
 .deck.player > .card.active {
 cursor: pointer;
 }
+
+.deck-stats {
+    position: absolute;
+    right: 60px;
+    top: 10px;
+    background: rgba(255,255,255,0.7);
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow:  0 0 0 0 red, 3px 3px 13px rgba(0,0,0,0.3);
+    color: #0f2107;
+}
+
+.deck.active .deck-stats {
+    background: rgba(255,255,255,1);
+    box-shadow:  0 0 0 3px red ,3px 3px 13px rgba(0,0,0,0.3);
+}
+
 .stack > .card.active.required {
     -webkit-animation: redShadow linear 2s infinite;
     -o-animation: redShadow linear 2s  infinite;
@@ -646,4 +663,6 @@ cursor: pointer;
     background: linear-gradient(135deg, rgba(241,23,23,1) 0%,rgba(255,247,0,1) 33%,rgba(66,150,255,1) 68%,rgba(182,253,37,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f11717', endColorstr='#b6fd25',GradientType=1 );
 }
+
+
 
