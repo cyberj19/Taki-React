@@ -1,22 +1,8 @@
 import React from "react";
-import Deck from "./deck"
 import {
-    PLAYER_TYPE,
-    COMPUTER_TYPE,
-    HEAP_TYPE,
-    ACTION_CHOOSE_CARD,
-    ACTION_INIT_PACK,
-    ACTION_PULL_CARD
-} from '../helpers/constants';
-import {
-    cardsColors,
-    regularCards,
-    unColoredCards,
     UNCOLORED_COLOR,
     CARDS
 } from "../modules/cards.jsm";
-import {getText} from "../modules/texts.jsm";
-
 
 
 class ComputerPlayer extends React.Component {
@@ -24,10 +10,16 @@ class ComputerPlayer extends React.Component {
         super(props);
 
         this.cardScore = this.cardScore.bind(this);
+        this.playTurn = this.playTurn.bind(this);
     }
 
 
-    componentDidMount() {
+    componentWillMount() {
+        console.log('componentWillMount');
+        window.setTimeout( this.playTurn, 1000 );
+    }
+
+    playTurn() {
         const {cards, chooseCard, isCardEligible, endTaki, turn, pullCard} = this.props;
 
         if (turn) {
@@ -66,8 +58,6 @@ class ComputerPlayer extends React.Component {
         }
     }
 
-
-
     cardScore(card) { // this function runs for eligible cards only
         const {heapCard, cards} = this.props,
             otherCardsInColor = cards.reduce((accumulator, card) => {
@@ -75,6 +65,7 @@ class ComputerPlayer extends React.Component {
             }, 0);
         if (card.type === CARDS.COLOR) return 0; // We want the computer to use "Change color" only if all other options been used
         if (card.type === CARDS.STOP) return 5;
+        if (card.type === CARDS.TWO) return 3;
         if (card.type === CARDS.PLUS) return cards.length === 2 ? 7 : 4;  // if 2 cards remains i prefer to use the plus now and not in the last turn
         if (card.type === CARDS.TAKI) return card.color === UNCOLORED_COLOR ? otherCardsInColor > 1 ? 8 : 0 :  6;
         return 1;
@@ -82,7 +73,6 @@ class ComputerPlayer extends React.Component {
     render() {
         return <span />;
     }
-
 }
 
 export default ComputerPlayer;
