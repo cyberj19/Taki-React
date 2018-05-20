@@ -13,7 +13,6 @@ class ComputerPlayer extends React.Component {
         this.playTurn = this.playTurn.bind(this);
     }
 
-
     componentWillMount() {
         console.log('componentWillMount');
         window.setTimeout( this.playTurn, 1000 );
@@ -34,7 +33,6 @@ class ComputerPlayer extends React.Component {
 
                 currCard.color !== UNCOLORED_COLOR && colors.push(currCard.color);
                 if (!isCardEligible(currCard)) continue;
-
 
                 if (currScore > maxScore) {
                     maxScore = currScore;

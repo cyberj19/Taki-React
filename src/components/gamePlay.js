@@ -75,12 +75,9 @@ class GamePlay extends React.Component {
                         time: performance.now(),
                         chosenCard: twoOn ? [...tempTakenCardsArr] : {...newCard} })
                 }
-                else {
-                    tempTakenCardsArr.push({...newCard});
-                }
+                else tempTakenCardsArr.push({...newCard});
+
                 newPlayers[turn] = {...newPlayers[turn], cards: [...newCards], moves: [...newMoves]};
-
-
                 if (!twoInAction) {
                     this.nextTurn();
                     window.clearInterval(takeCards);
@@ -100,9 +97,7 @@ class GamePlay extends React.Component {
                         takenCardsArr: [...tempTakenCardsArr]
                     });
                 }
-
             }, 20);
-
         }
     }
 
@@ -135,7 +130,6 @@ class GamePlay extends React.Component {
         this.setState({players: newPlayersArr});
     }
 
-
     setStack() {
         const {stack} = this.state;
         let {heap} = this.state;
@@ -154,7 +148,6 @@ class GamePlay extends React.Component {
                     });
                 });
             }
-
             for (let j = 0; j < 4; ++j) {
                 unColoredCards.forEach(type => {
                     tmpStack.push({type, color: UNCOLORED_COLOR});
@@ -175,7 +168,6 @@ class GamePlay extends React.Component {
             tempCards = [...players[turn].cards];
 
         if (this.isCardEligible(tempCard)) {
-
             tempHeap.push({...tempCard, ...{color: tempCard.color === UNCOLORED_COLOR ? (color || topCard.color) : tempCard.color}});
             tempCards.splice(cardIndex, 1);
             tempPlayers[turn].moves.push({type: ACTION_CHOOSE_CARD, cards: [...tempCards], time: performance.now(), chosenCard: {...tempCard}});
@@ -267,20 +259,27 @@ class GamePlay extends React.Component {
         return winner;
     }
 
-
     render() {
         const {players, heap, stack, turn, notAllowed, activeAction, activeTurn} = this.state,
             winner = this.getWinner();
 
         if (stack.length) {
             const topCard = heap[heap.length - 1],
-                  isPlayer = players[turn].type === PLAYER_TYPE,
-                  takiMode = activeAction === CARDS.TAKI;
+                isPlayer = players[turn].type === PLAYER_TYPE,
+                takiMode = activeAction === CARDS.TAKI,
+                deckProps = i => ({
+                    activeTurn,
+                    turn: i === turn,
+                    chooseCard: this.chooseCard,
+                    isCardEligible: this.isCardEligible,
+                    heapCard: topCard,
+                    pullCard: this.pullFromStack,
+                    endTaki: i === turn && takiMode && this.endTaki
+                });
 
             return (<div className="board" id="board">
                 {winner && <div>We have a winner</div>}
-                {players.map((player, i) => Deck(player, i === turn, this.chooseCard, this.isCardEligible, topCard, this.pullFromStack, activeTurn, i === turn && takiMode && this.endTaki))}
-
+                {players.map((player, i) => <Deck key={i} {...player} {...deckProps(i)}/>)}
                 <div onClick={isPlayer ? this.pullFromStack : ()=>{}} className="pack stack">
                     <div className={`card active ${isPlayer && activeTurn && this.playerHasEligibleCard() ? '' : 'required'}`}/>
                 </div>
