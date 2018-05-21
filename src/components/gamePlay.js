@@ -281,7 +281,7 @@ class GamePlay extends React.Component {
                 {winner && <div>We have a winner</div>}
                 {players.map((player, i) => <Deck key={i} {...player} {...deckProps(i)}/>)}
                 <div onClick={isPlayer ? this.pullFromStack : ()=>{}} className="pack stack">
-                    <div className={`card active ${isPlayer && activeTurn && this.playerHasEligibleCard() ? '' : 'required'}`}/>
+                    <div className={`card active ${isPlayer && activeTurn && (this.playerHasEligibleCard() ? '' : 'required')}`}/>
                 </div>
                 <div className={`pack heap ${notAllowed ? 'not-allowed' : ''}`}>
                     {topCard && <div className="card" data-card-type={topCard.type} data-color={topCard.color}/>}

@@ -14,8 +14,7 @@ class ComputerPlayer extends React.Component {
     }
 
     componentWillMount() {
-        console.log('componentWillMount');
-        window.setTimeout( this.playTurn, 1000 );
+        window.setTimeout( this.playTurn, 1200 );
     }
 
     playTurn() {
@@ -25,7 +24,7 @@ class ComputerPlayer extends React.Component {
             let maxScore = -1,
                 colors = [],
                 priorityIndex = -1,
-                color = UNCOLORED_COLOR;
+                color = null;
 
             for (let i = 0; i < cards.length; ++i) {
                 const currCard = cards[i],
