@@ -241,7 +241,7 @@ li.clock::before {
 }
 
 .deck > .card {
-    margin: 0 -4.5vw;
+    margin: 0 -5.5vw;
 }
 .deck.opp {
     height: 2vw;
