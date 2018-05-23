@@ -1,6 +1,7 @@
 import React from "react";
-import {getText} from "../modules/texts.jsm";
+import {getText} from "../modules/texts.mjs";
 import GamePlay from "./gamePlay";
+import Dialog from "./dialog";
 
 const gameTypes = ["regular", "tournament"];
 
@@ -10,11 +11,16 @@ class GameManager extends React.Component {
 
         this.state = {
             currentGameType: null,
-            currentGameId: null
+            currentGameId: null,
+            playerName: null,
+            settingsModal: false,
         };
 
         this.setGame = this.setGame.bind(this);
+        this.inputChange = this.inputChange.bind(this);
         this.renderGameChooser = this.renderGameChooser.bind(this);
+        this.openSettingsModal = this.openSettingsModal.bind(this);
+        this.closeSettingsModal = this.closeSettingsModal.bind(this);
     }
 
     getGames() {
@@ -27,6 +33,15 @@ class GameManager extends React.Component {
             currentGameId: id
         });
     }
+    openSettingsModal() {
+        this.setState({settingsModal: true});
+    }
+    closeSettingsModal() {
+        this.setState({settingsModal: false});
+    }
+    inputChange(e) {
+        this.setState({playerName: e.target.value.length ? e.target.value : null});
+    }
 
     renderGameChooser(gameType, id) {
         return <div onClick={() => this.setGame(gameType, id || 0)}
@@ -38,9 +53,20 @@ class GameManager extends React.Component {
     }
 
     render() {
-        const {currentGameType, currentGameId} = this.state;
+        const {currentGameType, currentGameId, playerName, settingsModal} = this.state;
 
-        return ((currentGameType && currentGameId !== null) ? <GamePlay gameType={currentGameType} gameId={currentGameId} withComputer={true}/> : <div>
+        return ((currentGameType && currentGameId !== null) ? <GamePlay gameType={currentGameType} gameId={currentGameId} playerName={playerName} withComputer={true}/> : <div>
+            <ul className="menu">
+                <li onClick={this.openSettingsModal} className="settings">
+                    Settings
+                </li>
+            </ul>
+            <Dialog title={getText('settingsModalTitle')}
+                    approveFunction={this.closeSettingsModal}
+                    description={<div>Name: <input onBlur={this.inputChange} /></div>}
+                    isOpen={settingsModal}
+                    noCancel
+            />
             <h1>{getText('gameChooserHeader')}</h1>
             {this.getGames().map(this.renderGameChooser)}
         </div>)

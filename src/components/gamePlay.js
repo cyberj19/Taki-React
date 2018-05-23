@@ -14,8 +14,10 @@ import {
     unColoredCards,
     UNCOLORED_COLOR,
     CARDS
-} from "../modules/cards.jsm";
-import {getText} from "../modules/texts.jsm";
+} from "../modules/cards.mjs";
+import Timer from './timer';
+import {getText} from "../modules/texts.mjs";
+import Dialog from "./dialog";
 
 
 
@@ -29,13 +31,16 @@ class GamePlay extends React.Component {
             heap: [],
             turn: 0,
             activeTurn: true,
+            cantPullModal: false,
             twoInAction: 0,
             activeAction: null,
             takenCardsArr: [],
+            startTime: performance.now()
         };
 
         this.endTaki = this.endTaki.bind(this);
         this.setHeap = this.setHeap.bind(this);
+        this.getMenu = this.getMenu.bind(this);
         this.initGame = this.initGame.bind(this);
         this.setStack = this.setStack.bind(this);
         this.pullCard = this.pullCard.bind(this);
@@ -44,8 +49,10 @@ class GamePlay extends React.Component {
         this.startGame = this.startGame.bind(this);
         this.chooseCard = this.chooseCard.bind(this);
         this.setPlayers = this.setPlayers.bind(this);
+        this.cantPullCard = this.cantPullCard.bind(this);
         this.pullFromStack = this.pullFromStack.bind(this);
         this.isCardEligible = this.isCardEligible.bind(this);
+        this.closePullCardModal = this.closePullCardModal.bind(this);
         this.playerHasEligibleCard = this.playerHasEligibleCard.bind(this);
     }
 
@@ -99,6 +106,9 @@ class GamePlay extends React.Component {
                 }
             }, 20);
         }
+        else {
+            this.cantPullCard();
+        }
     }
 
     playerHasEligibleCard() {
@@ -124,7 +134,7 @@ class GamePlay extends React.Component {
     }
     setPlayers() {
         // in the future we will get players from server
-        const playerObj = {type: PLAYER_TYPE, cards: [], name: PLAYER_TYPE, moves: []},
+        const playerObj = {type: PLAYER_TYPE, cards: [], name: this.props.playerName || PLAYER_TYPE, moves: []},
               newPlayersArr = [{ ...playerObj}, {...playerObj, type: COMPUTER_TYPE, name: COMPUTER_TYPE}];
 
         this.setState({players: newPlayersArr});
@@ -210,13 +220,19 @@ class GamePlay extends React.Component {
     setHeap() {
         this.setState({heap: [this.pullCard(HEAP_TYPE)]});
     }
+    cantPullCard() {
+        this.setState({cantPullModal: true});
+    }
+    closePullCardModal() {
+        this.setState({cantPullModal: false});
+    }
+
     initGame() {
         this.setPlayers();
         this.setStack();
         window.setTimeout( this.setHeap, 50 );
         window.setTimeout( this.startGame, 100 );
     }
-
     pullCard(rquire) {
         this.setStack();
         const {stack} = this.state;
@@ -231,7 +247,6 @@ class GamePlay extends React.Component {
         this.setState({stack: tempStack});
         return newCard;
     };
-
     startGame() {
         const playersCount = this.state.players.length,
             {players, stack} = this.state; // init empty array for each player
@@ -245,9 +260,11 @@ class GamePlay extends React.Component {
             tempStack.splice(cardLoc, 1);
         }
 
-        this.setState({stack: tempStack,
+        this.setState({
+            stack: tempStack,
             players: players.map((player, i) => {return {...player, ...{cards: [...newCards[i]], moves: [{type: ACTION_INIT_PACK, cards: [...newCards[i]], time: performance.now()}]} }}),
             turn: 0,
+            startTime: performance.now()
         });
     }
 
@@ -259,8 +276,24 @@ class GamePlay extends React.Component {
         return winner;
     }
 
+    getMenu() {
+        const {players, startTime} = this.state,
+            turns = players.reduce((acc, player)=> (acc += player.moves.length - 1), 0);
+
+        return <ul className="menu">
+            <li className="restart">
+                Restart
+            </li>
+            <li className="clock">
+                <Timer startTime={startTime}/>
+                <hr/>
+                {turns}
+            </li>
+        </ul>;
+    }
+
     render() {
-        const {players, heap, stack, turn, notAllowed, activeAction, activeTurn} = this.state,
+        const {players, heap, stack, turn, notAllowed, activeAction, cantPullModal, activeTurn} = this.state,
             winner = this.getWinner();
 
         if (stack.length) {
@@ -278,9 +311,11 @@ class GamePlay extends React.Component {
                 });
 
             return (<div className="board" id="board">
+                {this.getMenu()}
                 {winner && <div>We have a winner</div>}
+                <Dialog approveFunction={this.closePullCardModal} title={getText('CantPullTitle')} description={getText('CantPullDesc' + (!isPlayer ? 'NotPlayer' : (takiMode ? 'Taki' : '')) )} isOpen={cantPullModal} noCancel/>
                 {players.map((player, i) => <Deck key={i} {...player} {...deckProps(i)}/>)}
-                <div onClick={isPlayer ? this.pullFromStack : ()=>{}} className="pack stack">
+                <div onClick={(isPlayer && !takiMode) ? this.pullFromStack : this.cantPullCard} className="pack stack">
                     <div className={`card active ${isPlayer && activeTurn && (this.playerHasEligibleCard() ? '' : 'required')}`}/>
                 </div>
                 <div className={`pack heap ${notAllowed ? 'not-allowed' : ''}`}>

@@ -2,7 +2,7 @@ import React from "react";
 import {
     UNCOLORED_COLOR,
     CARDS
-} from "../modules/cards.jsm";
+} from "../modules/cards.mjs";
 
 
 class ComputerPlayer extends React.Component {
