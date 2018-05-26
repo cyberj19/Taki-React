@@ -9,6 +9,10 @@ class Timer extends React.Component {
 
     componentDidUpdate(prevProps) {
         !prevProps.endTime && this.props.endTime && clearInterval(this.interval);
+        if (prevProps.endTime && !this.props.endTime) {
+            clearInterval(this.interval);
+            this.interval = setInterval(() => this.tick(), 1000);
+        }
     }
 
     componentDidMount() {

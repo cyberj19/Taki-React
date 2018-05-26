@@ -61,9 +61,12 @@ class GamePlay extends React.Component {
         window.setTimeout( this.initGame, 10 );
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(preProps) {
         if (this.getWinner() && !this.state.endTime) {
             this.setState({endTime: performance.now()});
+        }
+        if (preProps.gameId !== this.props.gameId) { // restart same game
+            window.setTimeout( this.initGame, 10 );
         }
     }
 
@@ -286,7 +289,16 @@ class GamePlay extends React.Component {
     getWinnerRender() {
         const winner = this.getWinner();
 
-        return !!winner && [<div key="pyro" className="pyro"/>,<Dialog key="winDialog" isOpen  title={`${winner.name} has Won the game`}/>];
+        if (winner) {
+            const stats = this.state.players.map(({moves}) => moves).reduce((pre, move) => pre = [...pre, ...move], []);
+
+            return [
+                <div key="pyro" className="pyro"/>,
+                <Dialog key="winDialog" isOpen title={`${winner.name} has Won the game`}
+                        cancelFn={() => this.props.endGameFn(stats)}
+                        approveFunction={() => this.props.endGameFn(stats, true)}/>
+            ];
+        }
     }
 
     getMenu() {

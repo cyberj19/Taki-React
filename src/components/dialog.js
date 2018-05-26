@@ -1,4 +1,4 @@
-import React from "React";
+import React from "react";
 import Deck from "./deck";
 
 const Dialog = ({title, description, approveFunction, cancelFn, noCancel, isOpen}) => {

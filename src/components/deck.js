@@ -1,4 +1,4 @@
-import React from "React";
+import React from "react";
 import {UNCOLORED_COLOR, cardsColors, CARDS} from "../modules/cards.mjs";
 import {getText} from "../modules/texts.mjs";
 import {PLAYER_TYPE} from '../helpers/constants';
