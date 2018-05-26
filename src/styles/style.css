@@ -56,7 +56,7 @@ body {
 .menu {
     position: absolute;
     right: 0;
-    top: 0;
+    top: 5px;
     z-index: 1;
 }
 .menu li {
@@ -230,6 +230,12 @@ li.clock::before {
 .card[data-card-type="COLOR"]::before,
 .card[data-card-type="COLOR"]::after {
     content: '\2756';
+}
+
+.card[data-card-type="2"]::before,
+.card[data-card-type="2"]::after {
+    content: "2+";
+    letter-spacing: -0.15em;
 }
 
 .card[data-color=blue] {color: #4CBBDB}

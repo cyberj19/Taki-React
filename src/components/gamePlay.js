@@ -35,7 +35,8 @@ class GamePlay extends React.Component {
             twoInAction: 0,
             activeAction: null,
             takenCardsArr: [],
-            startTime: performance.now()
+            startTime: performance.now(),
+            endTime: null,
         };
 
         this.endTaki = this.endTaki.bind(this);
@@ -52,12 +53,18 @@ class GamePlay extends React.Component {
         this.cantPullCard = this.cantPullCard.bind(this);
         this.pullFromStack = this.pullFromStack.bind(this);
         this.isCardEligible = this.isCardEligible.bind(this);
+        this.getWinnerRender = this.getWinnerRender.bind(this);
         this.closePullCardModal = this.closePullCardModal.bind(this);
         this.playerHasEligibleCard = this.playerHasEligibleCard.bind(this);
     }
-
     componentWillMount() {
         window.setTimeout( this.initGame, 10 );
+    }
+
+    componentDidUpdate() {
+        if (this.getWinner() && !this.state.endTime) {
+            this.setState({endTime: performance.now()});
+        }
     }
 
     pullFromStack() {
@@ -264,20 +271,26 @@ class GamePlay extends React.Component {
             stack: tempStack,
             players: players.map((player, i) => {return {...player, ...{cards: [...newCards[i]], moves: [{type: ACTION_INIT_PACK, cards: [...newCards[i]], time: performance.now()}]} }}),
             turn: 0,
-            startTime: performance.now()
+            startTime: performance.now(),
+            endTime: null,
         });
     }
 
     getWinner() {
         const {players} = this.state;
         let winner = null;
-        players.forEach(player=>{if (!player.cards.length) winner = player});
+        players.forEach(player=>{if (!player.cards.length && player.moves.length) winner = player});
 
         return winner;
     }
+    getWinnerRender() {
+        const winner = this.getWinner();
+
+        return !!winner && [<div key="pyro" className="pyro"/>,<Dialog key="winDialog" isOpen  title={`${winner.name} has Won the game`}/>];
+    }
 
     getMenu() {
-        const {players, startTime} = this.state,
+        const {players, startTime, endTime} = this.state,
             turns = players.reduce((acc, player)=> (acc += player.moves.length - 1), 0);
 
         return <ul className="menu">
@@ -285,7 +298,7 @@ class GamePlay extends React.Component {
                 Restart
             </li>
             <li className="clock">
-                <Timer startTime={startTime}/>
+                <Timer startTime={startTime} endTime={endTime}/>
                 <hr/>
                 {turns}
             </li>
@@ -293,8 +306,7 @@ class GamePlay extends React.Component {
     }
 
     render() {
-        const {players, heap, stack, turn, notAllowed, activeAction, cantPullModal, activeTurn} = this.state,
-            winner = this.getWinner();
+        const {players, heap, stack, turn, notAllowed, activeAction, cantPullModal, activeTurn} = this.state;
 
         if (stack.length) {
             const topCard = heap[heap.length - 1],
@@ -312,7 +324,7 @@ class GamePlay extends React.Component {
 
             return (<div className="board" id="board">
                 {this.getMenu()}
-                {winner && <div>We have a winner</div>}
+                {this.getWinnerRender()}
                 <Dialog approveFunction={this.closePullCardModal} title={getText('CantPullTitle')} description={getText('CantPullDesc' + (!isPlayer ? 'NotPlayer' : (takiMode ? 'Taki' : '')) )} isOpen={cantPullModal} noCancel/>
                 {players.map((player, i) => <Deck key={i} {...player} {...deckProps(i)}/>)}
                 <div onClick={(isPlayer && !takiMode) ? this.pullFromStack : this.cantPullCard} className="pack stack">

@@ -56,16 +56,16 @@ class ComputerPlayer extends React.Component {
     }
 
     cardScore(card) { // this function runs for eligible cards only
-        const {heapCard, cards} = this.props,
+        const {heapCard, cards, endTaki} = this.props,
             otherCardsInColor = cards.reduce((accumulator, card) => {
                 if (card.color === heapCard.color) ++accumulator;
             }, 0);
-        if (card.type === CARDS.COLOR) return 0; // We want the computer to use "Change color" only if all other options been used
-        if (card.type === CARDS.STOP) return 5;
-        if (card.type === CARDS.TWO) return 3;
-        if (card.type === CARDS.PLUS) return cards.length === 2 ? 7 : 4;  // if 2 cards remains i prefer to use the plus now and not in the last turn
-        if (card.type === CARDS.TAKI) return card.color === UNCOLORED_COLOR ? otherCardsInColor > 1 ? 8 : 0 :  6;
-        return 1;
+        if (card.type === CARDS.COLOR) return endTaki && heapCard === CARDS.PLUS ? -2 : 0; // We want the computer to use "Change color" only if all other options been used
+        if (card.type === CARDS.STOP) return endTaki ? 1.1 : 5;
+        if (card.type === CARDS.TWO) return endTaki ? 1 : 3 ;
+        if (card.type === CARDS.PLUS) return endTaki ? 0.5 : cards.length === 2 ? 7 : 4;  // if 2 cards remains i prefer to use the plus now and not in the last turn
+        if (card.type === CARDS.TAKI) return endTaki ? -2 : (card.color === UNCOLORED_COLOR ? otherCardsInColor > 1 ? 8 : 0 : 6);
+        return 2;
     }
     render() {
         return <span />;

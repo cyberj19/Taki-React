@@ -3,6 +3,13 @@
 /***   Pyro taken from http://jsfiddle.net/elin/7m3bL/  ***/
 /***                                                    ***/
 /**********************************************************/
+.pyro {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
 .pyro::before, .pyro::after {
     content: ".";
     color: transparent;
