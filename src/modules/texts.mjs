@@ -11,6 +11,7 @@ const texts = {
     CantPullDescTaki: 'Cn\'t pull card during a TAKI move on.',
     CantPullDescNotPlayer: 'Cn\'t pull card not in your turn',
     totalMoves: 'Total moves:',
+    avgMoves: 'Average move time:',
     colorDialogTitle: 'Please choose color:',
 };
 

@@ -36,6 +36,7 @@ class GamePlay extends React.Component {
             activeAction: null,
             takenCardsArr: [],
             startTime: performance.now(),
+            lastAction: performance.now(),
             endTime: null,
         };
 
@@ -74,7 +75,7 @@ class GamePlay extends React.Component {
         if (!this.playerHasEligibleCard()) {
             this.setState({activeTurn: false});
 
-            const {turn, players} = this.state,
+            const {turn, players, lastAction} = this.state,
                 takeCards = window.setInterval(() => {
                 const {twoInAction, activeAction} = this.state,
                     twoOn = activeAction === CARDS.TWO,
@@ -87,10 +88,13 @@ class GamePlay extends React.Component {
                 newCards.push({...newCard});
                 if (!twoInAction) {
                     twoOn && tempTakenCardsArr.push({...newCard});
-                    newMoves.push({type: ACTION_PULL_CARD,
+                    newMoves.push({
+                        type: ACTION_PULL_CARD,
                         cards: [...newCards],
-                        time: performance.now(),
-                        chosenCard: twoOn ? [...tempTakenCardsArr] : {...newCard} })
+                        time: lastAction,
+                        duration: performance.now() - lastAction,
+                        chosenCard: twoOn ? [...tempTakenCardsArr] : {...newCard}
+                    })
                 }
                 else tempTakenCardsArr.push({...newCard});
 
@@ -103,6 +107,7 @@ class GamePlay extends React.Component {
                         players: [...newPlayers],
                         twoInAction: 0,
                         activeTurn: true,
+                        lastAction: performance.now(),
                         activeAction: null,
                         takenCardsArr: []
                     });
@@ -180,7 +185,7 @@ class GamePlay extends React.Component {
     chooseCard(cardIndex, color) {
         this.setState({activeTurn: false});
 
-        const {players, turn, heap, activeAction, twoInAction} = this.state,
+        const {players, turn, heap, activeAction, twoInAction, lastAction} = this.state,
             topCard = heap[heap.length - 1];
         let tempPlayers = [...players],
             tempHeap = [...heap],
@@ -190,7 +195,14 @@ class GamePlay extends React.Component {
         if (this.isCardEligible(tempCard)) {
             tempHeap.push({...tempCard, ...{color: tempCard.color === UNCOLORED_COLOR ? (color || topCard.color) : tempCard.color}});
             tempCards.splice(cardIndex, 1);
-            tempPlayers[turn].moves.push({type: ACTION_CHOOSE_CARD, cards: [...tempCards], time: performance.now(), chosenCard: {...tempCard}});
+            tempPlayers[turn].moves.push({
+                type: ACTION_CHOOSE_CARD,
+                cards: [...tempCards],
+                time: lastAction,
+                duration: performance.now() -  lastAction,
+                chosenCard: {...tempCard}
+            });
+
             tempPlayers[turn].cards = tempCards;
             this.setState({players: [...tempPlayers], heap: tempHeap});
 
@@ -203,7 +215,7 @@ class GamePlay extends React.Component {
                 tempCard.type === CARDS.TWO && this.setState({activeAction: CARDS.TWO, twoInAction: twoInAction + 2});
                 this.nextTurn(tempCard.type === CARDS.STOP ? 2 : 1)
             }
-            this.setState({activeTurn: true});
+            this.setState({activeTurn: true, lastAction: performance.now() });
             return true;
         }
         return false;
@@ -275,6 +287,7 @@ class GamePlay extends React.Component {
             players: players.map((player, i) => {return {...player, ...{cards: [...newCards[i]], moves: [{type: ACTION_INIT_PACK, cards: [...newCards[i]], time: performance.now()}]} }}),
             turn: 0,
             startTime: performance.now(),
+            lastAction: performance.now(),
             endTime: null,
         });
     }
@@ -290,7 +303,8 @@ class GamePlay extends React.Component {
         const winner = this.getWinner();
 
         if (winner) {
-            const stats = this.state.players.map(({moves}) => moves).reduce((pre, move) => pre = [...pre, ...move], []);
+            const stats = this.state.players.map(({moves}) => moves)
+                .reduce((pre, move) => pre = [...pre, ...move], []).sort((a ,b) => a.time > b.time ? 1 : -1);
 
             return [
                 <div key="pyro" className="pyro"/>,
