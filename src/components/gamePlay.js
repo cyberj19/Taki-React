@@ -16,7 +16,7 @@ import {
     CARDS
 } from "../modules/cards.mjs";
 import Timer from './timer';
-import {getText} from "../modules/texts.mjs";
+import {getText, toTimeString} from "../modules/texts.mjs";
 import Dialog from "./dialog";
 
 
@@ -51,7 +51,9 @@ class GamePlay extends React.Component {
         this.startGame = this.startGame.bind(this);
         this.chooseCard = this.chooseCard.bind(this);
         this.setPlayers = this.setPlayers.bind(this);
+        this.getEndStats = this.getEndStats.bind(this);
         this.cantPullCard = this.cantPullCard.bind(this);
+        this.getEndContent = this.getEndContent.bind(this);
         this.pullFromStack = this.pullFromStack.bind(this);
         this.isCardEligible = this.isCardEligible.bind(this);
         this.getWinnerRender = this.getWinnerRender.bind(this);
@@ -72,7 +74,7 @@ class GamePlay extends React.Component {
     }
 
     pullFromStack() {
-        if (!this.playerHasEligibleCard()) {
+        if (!this.playerHasEligibleCard(true)) {
             this.setState({activeTurn: false});
 
             const {turn, players, lastAction} = this.state,
@@ -126,11 +128,12 @@ class GamePlay extends React.Component {
         }
     }
 
-    playerHasEligibleCard() {
+    playerHasEligibleCard(considerSuperTaki) {
         const {players, turn} = this.state,
             cards = players[turn].cards;
 
         return cards.reduce((accumulator, card) => {
+            if (considerSuperTaki && card.type === CARDS.TAKI && card.color === UNCOLORED_COLOR) return accumulator;
             return accumulator || this.isCardEligible(card);
         }, false);
     }
@@ -299,6 +302,40 @@ class GamePlay extends React.Component {
 
         return winner;
     }
+    getEndStats() {
+        const moves = this.state.players.map(({moves, type, name}) => ({
+            name,
+            oneCardTotal: moves.filter(({cards}) => cards.length === 1).length,
+            playerTotalMoves: moves.length - 1,
+            playerAverageTime: moves.length ? ((moves.filter(({type : moveType}) => moveType !== ACTION_INIT_PACK)
+                .reduce(((acc, {duration})=> duration && (acc += duration)), 0)) / ((moves.length - 1) || 1)) / 1000 : 0,
+            playerType: type,
+        }));
+        return [{
+            playerType: 'stats',
+            name: 'stats',
+            oneCardTotal: 'Total times that had 1 card',
+            playerAverageTime: 'Average time per turn',
+            playerTotalMoves: 'Total moves'
+        }, ...moves].map(({playerType, name, oneCardTotal, playerAverageTime, playerTotalMoves}) => (<ul className={`player-stats ${playerType}`}>
+            <li>{name}</li>
+            <li>{oneCardTotal}</li>
+            <li>{typeof playerAverageTime === 'string' ? playerAverageTime : toTimeString(playerAverageTime)}</li>
+            <li>{playerTotalMoves}</li>
+        </ul>));
+    }
+
+    getEndContent() {
+        const {startTime, endTime, players} = this.state,
+            gameTime = (endTime - startTime) / 1000,
+            totalTurns = players.reduce((acc, {moves})=> (acc += moves.length - 1), 0);
+
+        return <div>
+            <strong>This game played {parseInt(gameTime / 60)} minutes and {parseInt(gameTime % 60)} seconds, during {totalTurns} moves</strong><br/>
+            {this.getEndStats()}<br/>
+            Click "OK" to play again and "Cancel" to go to main menu
+        </div>;
+    }
     getWinnerRender() {
         const winner = this.getWinner();
 
@@ -307,9 +344,10 @@ class GamePlay extends React.Component {
                 .reduce((pre, move) => pre = [...pre, ...move], []).sort((a ,b) => a.time > b.time ? 1 : -1);
 
             return [
-                <div key="pyro" className="pyro"/>,
+                (winner.type === PLAYER_TYPE ? <div key="pyro" className="pyro"/> : null),
                 <Dialog key="winDialog" isOpen title={`${winner.name} has Won the game`}
                         cancelFn={() => this.props.endGameFn(stats)}
+                        description={this.getEndContent()}
                         approveFunction={() => this.props.endGameFn(stats, true)}/>
             ];
         }
@@ -348,7 +386,7 @@ class GamePlay extends React.Component {
                     endTaki: i === turn && takiMode && this.endTaki
                 });
 
-            return (<div className="board" id="board">
+            return (<div className="board">
                 {this.getMenu()}
                 {this.getWinnerRender()}
                 <Dialog approveFunction={this.closePullCardModal} title={getText('CantPullTitle')} description={getText('CantPullDesc' + (!isPlayer ? 'NotPlayer' : (takiMode ? 'Taki' : '')) )} isOpen={cantPullModal} noCancel/>

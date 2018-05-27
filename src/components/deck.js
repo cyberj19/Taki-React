@@ -53,9 +53,6 @@ class Deck extends React.Component {
                 .reduce(((acc, {duration})=> duration && (acc += duration)), 0)) / ((moves.length - 1) || 1)) / 1000 : 0,
             isPlayer = type === PLAYER_TYPE;
 
-
-        debugger;
-
         return (<div className={`deck ${type} ${turn ? 'active' : ''}`}>
             {colorModalOpen && <Dialog title={getText('colorDialogTitle')}
                                        cancelFn={this.closeColorModal}
