@@ -112,17 +112,21 @@ li.clock::before {
 .menu li.clock:active {
     box-shadow: 0 0 5px rgba(0,0,0,0.3), inset -2px -2px #554c28;
 }
-.menu li.restart::before {
-    content: '⭯';
+.menu li.restart::before,
+.menu li.exit::before,
+.menu li.settings::before {
     font-size: 55px;
     display: inline-block;
     width: 100%;
 }
+.menu li.restart::before {
+    content: '⭯';
+}
 .menu li.settings::before {
     content: '\1f6e0';
-    font-size: 55px;
-    display: inline-block;
-    width: 100%;
+}
+.menu li.exit::before {
+    content: '\2716';
 }
 
 

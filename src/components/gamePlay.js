@@ -15,7 +15,7 @@ import {
     UNCOLORED_COLOR,
     CARDS
 } from "../modules/cards.mjs";
-import Timer from './timer';
+import GameMenu from './gameMenu';
 import {getText, toTimeString} from "../modules/texts.mjs";
 import Dialog from "./dialog";
 
@@ -43,7 +43,6 @@ class GamePlay extends React.Component {
 
         this.endTaki = this.endTaki.bind(this);
         this.setHeap = this.setHeap.bind(this);
-        this.getMenu = this.getMenu.bind(this);
         this.initGame = this.initGame.bind(this);
         this.setStack = this.setStack.bind(this);
         this.pullCard = this.pullCard.bind(this);
@@ -358,24 +357,8 @@ class GamePlay extends React.Component {
         }
     }
 
-    getMenu() {
-        const {players, startTime, endTime} = this.state,
-            turns = players.reduce((acc, player)=> (acc += player.moves.length - 1), 0);
-
-        return <ul className="menu">
-            <li className="restart">
-                Restart
-            </li>
-            <li className="clock">
-                <Timer startTime={startTime} endTime={endTime}/>
-                <hr/>
-                {turns}
-            </li>
-        </ul>;
-    }
-
     render() {
-        const {players, heap, stack, winner ,turn, notAllowed, activeAction, cantPullModal, activeTurn} = this.state;
+        const {players, heap, stack, winner ,turn, notAllowed, activeAction, cantPullModal, activeTurn, startTime, endTime} = this.state;
 
         if (players[0] && players[0].moves.length) {
             const topCard = heap[heap.length - 1],
@@ -393,7 +376,7 @@ class GamePlay extends React.Component {
                 });
 
             return (<div className="board">
-                {this.getMenu()}
+                <GameMenu players={players} startTime={startTime} endTime={endTime}/>
                 {this.getWinnerRender()}
                 <Dialog approveFunction={this.closePullCardModal} title={getText('CantPullTitle')}
                         description={getText('CantPullDesc' + (!isPlayer ? 'NotPlayer' : (takiMode ? 'Taki' : '')))}
