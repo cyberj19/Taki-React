@@ -1,7 +1,8 @@
 import React from "react";
 import {
     UNCOLORED_COLOR,
-    CARDS
+    CARDS,
+    cardsColors
 } from "../modules/cards.mjs";
 
 
@@ -48,7 +49,7 @@ class ComputerPlayer extends React.Component {
             }
 
             if (cards[priorityIndex].type === CARDS.COLOR) {
-                color = colors[Math.floor(Math.random() * colors.length)];
+                color = (colors.length ? colors : cardsColors)[Math.floor(Math.random() * colors.length)];
             }
 
             chooseCard(priorityIndex, color);

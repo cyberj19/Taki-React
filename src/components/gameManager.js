@@ -34,7 +34,7 @@ class GameManager extends React.Component {
         this.setState({
             gameStats: [...gamesStats, {stats, gameType: currentGameType, gameId: currentGameId}],
             currentGameType: replay ? currentGameType : null,
-            currentGameId: replay ? [currentGameId.split('-')[0], performance.now].join('-') : null,
+            currentGameId: replay ? [currentGameId.split('-')[0], performance.now()].join('-') : null,
         });
     }
 

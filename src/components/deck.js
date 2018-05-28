@@ -46,7 +46,7 @@ class Deck extends React.Component {
     render() {
         const {
                 name, cards, type, moves, turn, chooseCard, isCardEligible,
-                heapCard, pullCard, activeTurn, endTaki
+                heapCard, pullCard, activeTurn, endTaki, gameEnd
             } = this.props,
             {colorModalOpen, chosenCardIndex, chosenColor} = this.state,
             avgMoveTime = moves.length ? ((moves.filter(({type}) => type !== ACTION_INIT_PACK)
@@ -60,7 +60,7 @@ class Deck extends React.Component {
                                        description={this.colorDialogContent()}
                                        isOpen={colorModalOpen}
                                 />}
-            {!isPlayer && turn && activeTurn &&
+            {!isPlayer && turn && activeTurn && !gameEnd &&
             <ComputerPlayer {...{cards, chooseCard, heapCard, pullCard, isCardEligible, endTaki, turn}}/>}
             <div className="deck-stats">
                 <h2>{name}</h2>
