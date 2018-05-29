@@ -20,7 +20,6 @@ import EndGameStats from './endGameStats';
 import {getText} from "../modules/texts.mjs";
 import Dialog from "./dialog";
 
-
 class GamePlay extends React.Component {
     constructor(props) {
         super(props);

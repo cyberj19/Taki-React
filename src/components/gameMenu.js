@@ -1,20 +1,4 @@
 import React from "react";
-import Deck from "./deck"
-import {
-    PLAYER_TYPE,
-    COMPUTER_TYPE,
-    HEAP_TYPE,
-    ACTION_CHOOSE_CARD,
-    ACTION_INIT_PACK,
-    ACTION_PULL_CARD
-} from '../helpers/constants';
-import {
-    cardsColors,
-    regularCards,
-    unColoredCards,
-    UNCOLORED_COLOR,
-    CARDS
-} from "../modules/cards.mjs";
 import Timer from './timer';
 import EndGameStats from './endGameStats';
 import {getText} from "../modules/texts.mjs";
