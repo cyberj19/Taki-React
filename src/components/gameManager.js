@@ -2,8 +2,9 @@ import React from "react";
 import {getText} from "../modules/texts.mjs";
 import GamePlay from "./gamePlay";
 import Dialog from "./dialog";
+import {REGULAR_GAME, TOURNAMENS_GAME} from '../helpers/constants'
 
-const gameTypes = ["regular", "tournament"];
+const gameTypes = [REGULAR_GAME, TOURNAMENS_GAME];
 
 class GameManager extends React.Component {
     constructor(props) {

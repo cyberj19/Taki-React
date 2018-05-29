@@ -6,14 +6,15 @@ import {
     HEAP_TYPE,
     ACTION_CHOOSE_CARD,
     ACTION_INIT_PACK,
-    ACTION_PULL_CARD
+    ACTION_PULL_CARD,
+    REGULAR_GAME,
 } from '../helpers/constants';
 import {
     cardsColors,
     regularCards,
     unColoredCards,
     UNCOLORED_COLOR,
-    CARDS
+    CARDS,
 } from "../modules/cards.mjs";
 import GameMenu from './gameMenu';
 import EndGameStats from './endGameStats';
@@ -170,11 +171,10 @@ class GamePlay extends React.Component {
                         tmpStack.push({type, color});
                     });
                 });
-            }
-            for (let j = 0; j < 4; ++j) {
-                unColoredCards.forEach(type => {
+                unColoredCards.forEach(type => { // all uncolored cards are at least twice
                     tmpStack.push({type, color: UNCOLORED_COLOR});
                 });
+                tmpStack.push({type: CARDS.COLOR, color: UNCOLORED_COLOR}); // color card is 4 timer (2 more)
             }
             this.setState({stack: tmpStack});
         }
@@ -308,7 +308,8 @@ class GamePlay extends React.Component {
     }
 
     getWinnerRender() {
-        const {winner, players, startTime, endTime} = this.state,
+        const {gameType} = this.props,
+            {winner, players, startTime, endTime} = this.state,
             winnerObj = players[winner];
 
         if (winner !== null) {
@@ -319,7 +320,7 @@ class GamePlay extends React.Component {
                 (winnerObj.type === PLAYER_TYPE ? <div key="pyro" className="pyro"/> : null),
                 <Dialog key="winDialog" isOpen title={`${winnerObj.name} has Won the game`}
                         cancelFn={() => this.props.endGameFn(stats)}
-                        description={<EndGameStats {...{players, startTime, endTime}}/>}
+                        description={<EndGameStats {...{players, startTime, endTime}}>{gameType === REGULAR_GAME && 'if you want to watch step by step click here'}</EndGameStats>}
                         approveFunction={() => this.props.endGameFn(stats, true)}/>
             ];
         }

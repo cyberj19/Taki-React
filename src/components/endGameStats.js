@@ -43,13 +43,16 @@ class EndGameStats extends React.Component {
 
 
     render() {
-        const {startTime, endTime, players, noCancel} = this.props,
+        const {startTime, endTime, players, noCancel, children} = this.props,
             gameTime = (endTime - startTime) / 1000,
             totalTurns = players.reduce((acc, {moves})=> (acc += moves.length - 1), 0);
 
         return <div>
             <strong>This game played {parseInt(gameTime / 60)} minutes and {parseInt(gameTime % 60)} seconds, during {totalTurns} moves</strong><br/>
             {this.getEndStats()}<br/>
+            {children}
+            {children && <br/>}
+
             Click "OK" to play again {noCancel ? '' : 'and "Cancel" to go to main menu'}
         </div>;
     }
