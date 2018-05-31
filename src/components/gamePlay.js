@@ -54,6 +54,7 @@ class GamePlay extends React.Component {
         this.cantPullCard = this.cantPullCard.bind(this);
         this.pullFromStack = this.pullFromStack.bind(this);
         this.isCardEligible = this.isCardEligible.bind(this);
+        this.getViewModeText = this.getViewModeText.bind(this);
         this.getWinnerRender = this.getWinnerRender.bind(this);
         this.closePullCardModal = this.closePullCardModal.bind(this);
         this.playerHasEligibleCard = this.playerHasEligibleCard.bind(this);
@@ -87,6 +88,7 @@ class GamePlay extends React.Component {
                     twoOn && tempTakenCardsArr.push({...newCard});
                     newMoves.push({
                         type: ACTION_PULL_CARD,
+                        playerType: players[turn].type,
                         cards: [...newCards],
                         time: lastAction,
                         duration: performance.now() - lastAction,
@@ -196,9 +198,10 @@ class GamePlay extends React.Component {
             tempPlayers[turn].moves.push({
                 type: ACTION_CHOOSE_CARD,
                 cards: [...tempCards],
+                playerType: tempPlayers[turn].type,
                 time: lastAction,
                 duration: performance.now() -  lastAction,
-                chosenCard: {...tempCard}
+                chosenCard: {...tempCard, ...{color: tempCard.color === UNCOLORED_COLOR ? (color || topCard.color) : tempCard.color}}
             });
 
             tempPlayers[turn].cards = tempCards;
@@ -295,7 +298,7 @@ class GamePlay extends React.Component {
 
         this.setState({
             stack: tempStack,
-            players: players.map((player, i) => {return {...player, ...{cards: [...newCards[i]], moves: [{type: ACTION_INIT_PACK, cards: [...newCards[i]], time: performance.now()}]} }}),
+            players: players.map((player, i) => {return {...player, ...{cards: [...newCards[i]], moves: [{type: ACTION_INIT_PACK, cards: [...newCards[i]], time: performance.now(), playerType: player.type}]} }}),
             turn: 0,
             winner: null,
             startTime: performance.now(),
@@ -307,21 +310,29 @@ class GamePlay extends React.Component {
         });
     }
 
+    getViewModeText(stats) {
+        const {viewMode} = this.props;
+        return (<span>
+                    if you want to watch step by step
+                    <span className="dialog__buttons__button" onClick={()=> viewMode(stats)}>click here</span>
+                </span>);
+    }
+
     getWinnerRender() {
-        const {gameType} = this.props,
-            {winner, players, startTime, endTime} = this.state,
+        const {gameType, viewMode, endGameFn} = this.props,
+            {winner, players, startTime, endTime, heap} = this.state,
             winnerObj = players[winner];
 
         if (winner !== null) {
-            const stats = this.state.players.map(({moves}) => moves)
-                .reduce((pre, move) => pre = [...pre, ...move], []).sort((a ,b) => a.time > b.time ? 1 : -1);
+            const stats = [{type: ACTION_INIT_PACK, heap: [{...heap[0]}]}, ...players.map(({moves}) => moves)
+                .reduce((pre, move) => pre = [...pre, ...move]).sort((a ,b) => a.time > b.time ? 1 : -1)];
 
             return [
                 (winnerObj.type === PLAYER_TYPE ? <div key="pyro" className="pyro"/> : null),
                 <Dialog key="winDialog" isOpen title={`${winnerObj.name} has Won the game`}
-                        cancelFn={() => this.props.endGameFn(stats)}
-                        description={<EndGameStats {...{players, startTime, endTime}}>{gameType === REGULAR_GAME && 'if you want to watch step by step click here'}</EndGameStats>}
-                        approveFunction={() => this.props.endGameFn(stats, true)}/>
+                        cancelFn={() => endGameFn(stats)}
+                        description={<EndGameStats {...{players, startTime, endTime}}>{gameType === REGULAR_GAME && this.getViewModeText(stats)}</EndGameStats>}
+                        approveFunction={() => endGameFn(stats, true)}/>
             ];
         }
     }

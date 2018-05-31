@@ -1,6 +1,7 @@
 import React from "react";
 import {getText} from "../modules/texts.mjs";
 import GamePlay from "./gamePlay";
+import GameView from "./gameView";
 import Dialog from "./dialog";
 import {REGULAR_GAME, TOURNAMENS_GAME} from '../helpers/constants'
 
@@ -14,13 +15,17 @@ class GameManager extends React.Component {
             currentGameType: null,
             currentGameId: null,
             playerName: null,
+            viewMode: null,
             gamesStats: [],
             settingsModal: false,
         };
 
         this.setGame = this.setGame.bind(this);
         this.endGame = this.endGame.bind(this);
+        this.getViewMode = this.getViewMode.bind(this);
         this.inputChange = this.inputChange.bind(this);
+        this.closeViewMode = this.closeViewMode.bind(this);
+        this.startViewMode = this.startViewMode.bind(this);
         this.renderGameChooser = this.renderGameChooser.bind(this);
         this.openSettingsModal = this.openSettingsModal.bind(this);
         this.closeSettingsModal = this.closeSettingsModal.bind(this);
@@ -29,11 +34,26 @@ class GameManager extends React.Component {
     getGames() {
         return gameTypes; // in the future should get game list from server
     }
+    startViewMode(stats) {
+        const {currentGameType, currentGameId, gamesStats} = this.state;
+
+        this.setState({
+            gamesStats: [...gamesStats, {stats: JSON.parse(JSON.stringify(stats)), gameType: currentGameType, gameId: currentGameId}],
+            currentGameType: null,
+            currentGameId: null,
+            viewMode: currentGameId
+        });
+    }
+    closeViewMode() {
+        this.setState({
+            viewMode: null
+        });
+    }
     endGame(stats, replay) {
         const {currentGameType, currentGameId, gamesStats} = this.state;
 
         this.setState({
-            gameStats: [...gamesStats, {stats, gameType: currentGameType, gameId: currentGameId}],
+            gamesStats: [...gamesStats, {stats: JSON.parse(JSON.stringify(stats)), gameType: currentGameType, gameId: currentGameId}],
             currentGameType: replay ? currentGameType : null,
             currentGameId: replay ? [currentGameId.split('-')[0], performance.now()].join('-') : null,
         });
@@ -63,12 +83,17 @@ class GameManager extends React.Component {
             {getText(gameType + 'Chooser')}
         </div>;
     }
+    getViewMode(gameStatsId) {
+        const {gamesStats} = this.state;
+        return <GameView closeView={this.closeViewMode} moves={gamesStats.filter(({gameId}) => gameId === gameStatsId)[0].stats}/>
+    }
 
     render() {
-        const {currentGameType, currentGameId, playerName, settingsModal} = this.state;
+        const {currentGameType, viewMode, currentGameId, playerName, settingsModal} = this.state;
 
-        return ((currentGameType && currentGameId !== null) ?
-            <GamePlay gameType={currentGameType} gameId={currentGameId} playerName={playerName} withComputer={true} endGameFn={this.endGame}/>
+        return (viewMode ? this.getViewMode(viewMode)
+            : (currentGameType && currentGameId !== null) ?
+            <GamePlay gameType={currentGameType} gameId={currentGameId} playerName={playerName} withComputer={true} endGameFn={this.endGame} viewMode={this.startViewMode}/>
             : <div>
                 <ul className="menu">
                     <li onClick={this.openSettingsModal} className="settings">

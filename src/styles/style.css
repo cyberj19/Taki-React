@@ -85,6 +85,12 @@ body {
     box-sizing: border-box;
 }
 
+.menu li.disabled,
+.menu li.disabled:hover {
+    opacity: .2;
+    cursor: not-allowed;
+}
+
 li.clock::before,
 li.clock::after {
     content: "Turns ";
@@ -109,15 +115,26 @@ li.clock::before {
 .menu li:active {
     box-shadow: 0 0 5px rgba(0,0,0,0.3), inset 2px 2px #554c28;
 }
+.menu li:active {
+    box-shadow: 0 0 5px rgba(0,0,0,0.3), inset 2px 2px #554c28;
+}
 .menu li.clock:active {
     box-shadow: 0 0 5px rgba(0,0,0,0.3), inset -2px -2px #554c28;
 }
 .menu li.restart::before,
 .menu li.exit::before,
+.menu li.next::before,
+.menu li.pre::before,
 .menu li.settings::before {
     font-size: 55px;
     display: inline-block;
     width: 100%;
+}
+
+
+.menu li.next::before,
+.menu li.pre::before {
+    transform: rotate(180deg);
 }
 .menu li.restart::before {
     content: '⭯';
@@ -127,6 +144,12 @@ li.clock::before {
 }
 .menu li.exit::before {
     content: '\2716';
+}
+.menu li.pre::before {
+    content: '\293c';
+}
+.menu li.next::before {
+    content: '\293d';
 }
 
 

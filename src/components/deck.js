@@ -46,11 +46,11 @@ class Deck extends React.Component {
     render() {
         const {
                 name, cards, type, moves, turn, chooseCard, isCardEligible,
-                heapCard, pullCard, activeTurn, endTaki, gameEnd
+                heapCard, pullCard, activeTurn, endTaki, gameEnd, viewMode
             } = this.props,
             {colorModalOpen, chosenCardIndex, chosenColor} = this.state,
-            avgMoveTime = moves.length ? ((moves.filter(({type}) => type !== ACTION_INIT_PACK)
-                .reduce(((acc, {duration})=> duration && (acc += duration)), 0)) / ((moves.length - 1) || 1)) / 1000 : 0,
+            avgMoveTime = moves && moves.length ? ((moves.filter(({type}) => type !== ACTION_INIT_PACK)
+                .reduce(((acc, {duration}) => duration && (acc += duration)), 0)) / ((moves.length - 1) || 1)) / 1000 : 0,
             isPlayer = type === PLAYER_TYPE;
 
         return (<div className={`deck ${type} ${turn ? 'active' : ''}`}>
@@ -63,19 +63,19 @@ class Deck extends React.Component {
             {!isPlayer && turn && activeTurn && !gameEnd &&
             <ComputerPlayer {...{cards, chooseCard, heapCard, pullCard, isCardEligible, endTaki, turn}}/>}
             <div className="deck-stats">
-                <h2>{name}</h2>
-                <h3>{getText('totalMoves')} {moves.length - 1}</h3>
-                <h3>{getText('avgMoves')} {toTimeString(avgMoveTime)}</h3>
+                <h2>{name || type}</h2>
+                {moves && <h3>{getText('totalMoves')} {moves.length - 1}</h3>}
+                {avgMoveTime ? <h3>{getText('avgMoves')} {toTimeString(avgMoveTime)}</h3> : null}
             </div>
             {!!cards.length && cards.map(({type: cardType, color}, i) => {
                 const cardEligible = turn && isCardEligible({type: cardType, color});
                 return <div key={i}
                             className="card"
-                            {...isPlayer ? {
+                            {...(isPlayer || viewMode) ? {
                                 onClick: () => cardEligible && activeTurn && (cardType === CARDS.COLOR ? this.openColorModal(i) : chooseCard(i)),
                                 'data-card-type': cardType,
                                 'data-color': color,
-                                className: `card ${cardEligible ? 'active' : 'off'}`
+                                className: `card ${( cardEligible || !activeTurn ) ? 'active' : 'off'}`
                             } : {}
                             }
                 />
