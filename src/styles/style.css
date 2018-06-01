@@ -281,17 +281,23 @@ li.clock::before {
 
 .deck > .card {
     margin: 0 -5.5vw;
+
+    -webkit-transition: top .3s .2s, opacity .3s;
+    -moz-transition: top .3s .2s, opacity .3s;
+    -ms-transition: top .3s .2s, opacity .3s;
+    -o-transition: top .3s .2s, opacity .3s;
+    transition: top .3s .2s, opacity .3s;
 }
 .deck.opp {
     height: 2vw;
     counter-reset: section;
 }
-.deck.opp > .card::before {
+.deck.opp > .card:not([data-card-type])::before {
     content: counter(section);
     counter-increment: section;
 
 }
-.deck.opp > .card:last-of-type::before {
+.deck.opp > .card:not([data-card-type]):last-of-type::before {
     content: counter(section);
     position: absolute;
     bottom: 2px;
@@ -341,14 +347,13 @@ li.clock::before {
 .deck.player > .card {
     top: 90%;
     opacity: 1;
-    -webkit-transition: top .3s .2s, opacity .3s;
-    -moz-transition: top .3s .2s, opacity .3s;
-    -ms-transition: top .3s .2s, opacity .3s;
-    -o-transition: top .3s .2s, opacity .3s;
-    transition: top .3s .2s, opacity .3s;
 }
 .deck.player > .card.in {
     top: -70%;
+    opacity: 0;
+}
+.deck.opp > .card.in {
+    top: 70%;
     opacity: 0;
 }
 .deck .card {
@@ -424,7 +429,7 @@ cursor: pointer;
 .deck.player > .card.active:hover {
     top: 50%;
 }
-.deck.player > .card.active.chosen {
+.deck.player > .card.chosen {
     top: -70%;
     opacity: 0;
     -webkit-transform: rotate(540deg);
@@ -437,6 +442,21 @@ cursor: pointer;
     -ms-transition: all .6s;
     -o-transition: all .6s;
     transition: all .6s;
+}
+
+.deck.opp > .card.chosen {
+    top: 70%;
+    opacity: 0;
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -ms-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
 }
 
 .deck.player > .card.off {

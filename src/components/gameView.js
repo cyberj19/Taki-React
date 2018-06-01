@@ -46,7 +46,7 @@ class GameView extends React.Component {
             heapCard,
             players: [...players],
             turn: 0,
-            moves: [{type: ACTION_CHOOSE_CARD, chosenCard: heapCard}, ...newMoves],
+            moves: [{type: ACTION_CHOOSE_CARD, heapCard: heapCard, cards: players.map(player => ({playerType: player.type, cards: [...player.cards]}))}, ...newMoves],
         });
     }
 
@@ -71,15 +71,17 @@ class GameView extends React.Component {
 
     render() {
         const {closeView} = this.props,
-            {players, heapCard ,turn, moves} = this.state,
+            {players ,turn, moves} = this.state,
             currTurn = moves[turn];
 
         if (players[0] && (players[0].cards.length || players[1].cards.length)) {
-            const deckProps = (pType) => ({
+            const heapCard = moves ? {...moves[turn].heapCard} : {},
+                deckProps = (pType) => ({
                     heapCard,
                     activeTurn: false,
                     turn: pType === currTurn.playerType,
                     isCardEligible: ()=>{},
+                    cards: [...moves[turn].cards.filter(({playerType}) => playerType === pType)[0].cards],
                     pullCard: this.pullFromStack,
                 });
 
