@@ -1,24 +1,9 @@
 import React from "react";
 import Deck from "./deck"
 import {
-    PLAYER_TYPE,
-    COMPUTER_TYPE,
-    HEAP_TYPE,
     ACTION_CHOOSE_CARD,
     ACTION_INIT_PACK,
-    ACTION_PULL_CARD,
-    REGULAR_GAME,
 } from '../helpers/constants';
-import {
-    cardsColors,
-    regularCards,
-    unColoredCards,
-    UNCOLORED_COLOR,
-    CARDS,
-} from "../modules/cards.mjs";
-import GameMenu from './gameMenu';
-import {getText} from "../modules/texts.mjs";
-import Dialog from "./dialog";
 
 class GameView extends React.Component {
     constructor(props) {
@@ -36,8 +21,8 @@ class GameView extends React.Component {
     }
 
     componentDidMount() {
-        const {moves} = this.props,
-            players = moves.filter(({type, heap}) => type === ACTION_INIT_PACK && !heap).map(({playerType, cards})=> ({cards, type: playerType})),
+        const {moves, names} = this.props,
+            players = moves.filter(({type, heap}) => type === ACTION_INIT_PACK && !heap).map(({playerType, cards})=> ({cards, type: playerType, name: names[playerType]})),
             heapCard = {...moves[0].heap[0]},
             newMoves = moves.filter(({type}) => type !== ACTION_INIT_PACK );
 

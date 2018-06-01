@@ -1,9 +1,14 @@
 import React from "react";
-import {getText} from "../modules/texts.mjs";
+import {getText, getCompName} from "../modules/texts.mjs";
 import GamePlay from "./gamePlay";
 import GameView from "./gameView";
 import Dialog from "./dialog";
-import {REGULAR_GAME, TOURNAMENS_GAME} from '../helpers/constants'
+import {
+    PLAYER_TYPE,
+    COMPUTER_TYPE,
+    REGULAR_GAME,
+    TOURNAMENS_GAME
+} from '../helpers/constants'
 
 const gameTypes = [REGULAR_GAME, TOURNAMENS_GAME];
 
@@ -18,6 +23,7 @@ class GameManager extends React.Component {
             viewMode: null,
             gamesStats: [],
             settingsModal: false,
+            computerName: getCompName()
         };
 
         this.setGame = this.setGame.bind(this);
@@ -84,16 +90,18 @@ class GameManager extends React.Component {
         </div>;
     }
     getViewMode(gameStatsId) {
-        const {gamesStats} = this.state;
-        return <GameView closeView={this.closeViewMode} moves={gamesStats.filter(({gameId}) => gameId === gameStatsId)[0].stats}/>
+        const {gamesStats, playerName, computerName} = this.state;
+        return <GameView closeView={this.closeViewMode}
+                         names={{[PLAYER_TYPE]: playerName,[COMPUTER_TYPE]: computerName}}
+                         moves={gamesStats.filter(({gameId}) => gameId === gameStatsId)[0].stats}/>
     }
 
     render() {
-        const {currentGameType, viewMode, currentGameId, playerName, settingsModal} = this.state;
+        const {currentGameType, viewMode, currentGameId, playerName, settingsModal, computerName} = this.state;
 
         return (viewMode ? this.getViewMode(viewMode)
             : (currentGameType && currentGameId !== null) ?
-            <GamePlay gameType={currentGameType} gameId={currentGameId} playerName={playerName} withComputer={true} endGameFn={this.endGame} viewMode={this.startViewMode}/>
+            <GamePlay computerName={computerName} gameType={currentGameType} gameId={currentGameId} playerName={playerName} withComputer={true} endGameFn={this.endGame} viewMode={this.startViewMode}/>
             : <div>
                 <ul className="menu">
                     <li onClick={this.openSettingsModal} className="settings">

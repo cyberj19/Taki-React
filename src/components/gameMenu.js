@@ -72,16 +72,16 @@ class GameMenu extends React.Component {
 
     getStatsDialog() {
         const {players, startTime, endTime} = this.props,
-              {statsOpen} = this.state;
+              {statsOpen, modalType} = this.state;
 
         return <Dialog key="statsDialog" isOpen={statsOpen} title={getText('youLost')}
                        noCancel
-                       description={<EndGameStats noCancel {...{players, startTime, endTime}}/>}
+                       description={<EndGameStats okExit={modalType === EXIT} noCancel {...{players, startTime, endTime}}/>}
                        approveFunction={this.approveStatsModal}/>
     }
 
     render() {
-        const {players, startTime, endTime} = this.props,
+        const {players, startTime, endTime, gameNumber} = this.props,
             turns = players.reduce((acc, player)=> (acc += player.moves.length - 1), 0);
 
         return [
@@ -99,6 +99,9 @@ class GameMenu extends React.Component {
                     <hr/>
                     {turns}
                 </li>
+                {gameNumber !== null && <li className="tournament">
+                    #{gameNumber}
+                </li>}
             </ul>
         ];
     }

@@ -24,4 +24,8 @@ const cardsColors = [
 
 const UNCOLORED_COLOR = "none";
 
-export { CARDS, regularCards, unColoredCards, cardsColors, UNCOLORED_COLOR };
+const getCardScore = ({type}) => [CARDS.TAKI, CARDS.COLOR].indexOf(type) > -1 ? 15 :
+    [CARDS.STOP, CARDS.TWO, CARDS.PLUS].indexOf(type) > -1 ? 10 : parseInt(type);
+
+
+export { CARDS, regularCards, unColoredCards, cardsColors, UNCOLORED_COLOR, getCardScore };

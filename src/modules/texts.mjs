@@ -7,6 +7,8 @@ const texts = {
     tournamentChooser: 'Tournament Game',
     areYouSureTitle: 'Are you sure?',
     youLost: 'You lost the game',
+    tourScore: 'Score:',
+    tourScoreTotal: 'Total score',
     areYouSureDesc: 'After clicking "OK" you will lose the game',
     settingsModalTitle: 'You can edit your settings:',
     regularChooser: 'Regular Game',
@@ -32,3 +34,7 @@ export const toTimeString = seconds => {
 
     return getPartTime(timeMins) + ':' + getPartTime(timeSecs);
 };
+
+const computerNames =  ['Danny', 'Yaacov', 'Tomer', 'Ofir', 'David', 'Yonni'];
+
+export const getCompName = () => computerNames[Math.floor(Math.random() * computerNames.length)];

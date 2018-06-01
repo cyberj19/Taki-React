@@ -1,7 +1,7 @@
 import React from "react";
 import {UNCOLORED_COLOR, cardsColors, CARDS} from "../modules/cards.mjs";
 import {getText, toTimeString} from "../modules/texts.mjs";
-import {ACTION_CHOOSE_CARD, ACTION_INIT_PACK, PLAYER_TYPE} from '../helpers/constants';
+import {TOURNAMENS_GAME , ACTION_INIT_PACK, PLAYER_TYPE} from '../helpers/constants';
 import ComputerPlayer from "./computerPlayer";
 import Dialog from "./dialog";
 
@@ -71,10 +71,11 @@ class Deck extends React.Component {
 
     render() {
         const {
-                name, type, moves, turn, chooseCard, isCardEligible,
-                heapCard, pullCard, activeTurn, endTaki, gameEnd, viewMode
+                name, type, moves, turn, chooseCard, isCardEligible, gameType,
+                heapCard, pullCard, activeTurn, endTaki, gameEnd, viewMode, score
             } = this.props,
             {colorModalOpen, chosenCardIndex, chosenColor, cards} = this.state,
+            isTournament = gameType === TOURNAMENS_GAME,
             avgMoveTime = moves && moves.length ? ((moves.filter(({type}) => type !== ACTION_INIT_PACK)
                 .reduce(((acc, {duration}) => duration && (acc += duration)), 0)) / ((moves.length - 1) || 1)) / 1000 : 0,
             isPlayer = type === PLAYER_TYPE;
@@ -92,15 +93,14 @@ class Deck extends React.Component {
                 <h2>{name || type}</h2>
                 {moves && <h3>{getText('totalMoves')} {moves.length - 1}</h3>}
                 {avgMoveTime ? <h3>{getText('avgMoves')} {toTimeString(avgMoveTime)}</h3> : null}
+                {isTournament && <h3>{getText('tourScore')} {score}</h3>}
             </div>
             {!!cards.length && cards.map(({type: cardType, color, isIn, isOut}, i) => {
                 const cardEligible = turn && isCardEligible({type: cardType, color}),
-                    cardClassAdd = isIn ? 'in' : isOut ? 'chosen' : null;
-
-
+                    cardClassAdd = isIn ? 'in' : isOut ? 'chosen' : '';
                 return <div key={i}
                             className={`card ${cardClassAdd}`}
-                            {...(isPlayer || viewMode) ? {
+                            {...(isPlayer || viewMode || gameEnd) ? {
                                 onClick: () => cardEligible && activeTurn && (cardType === CARDS.COLOR ? this.openColorModal(i) : chooseCard(i)),
                                 'data-card-type': cardType,
                                 'data-color': color,

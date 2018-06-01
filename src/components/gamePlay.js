@@ -8,10 +8,12 @@ import {
     ACTION_INIT_PACK,
     ACTION_PULL_CARD,
     REGULAR_GAME,
+    TOURNAMENS_GAME,
 } from '../helpers/constants';
 import {
     cardsColors,
     regularCards,
+    getCardScore,
     unColoredCards,
     UNCOLORED_COLOR,
     CARDS,
@@ -36,6 +38,7 @@ class GamePlay extends React.Component {
             winner: null,
             activeAction: null,
             takenCardsArr: [],
+            tourScores: props.gameType === TOURNAMENS_GAME ? [] : null,
             startTime: performance.now(),
             lastAction: performance.now(),
             endTime: null,
@@ -53,10 +56,14 @@ class GamePlay extends React.Component {
         this.setPlayers = this.setPlayers.bind(this);
         this.cantPullCard = this.cantPullCard.bind(this);
         this.pullFromStack = this.pullFromStack.bind(this);
+        this.getPlayerScore = this.getPlayerScore.bind(this);
         this.isCardEligible = this.isCardEligible.bind(this);
+        this.getEndGameScore = this.getEndGameScore.bind(this);
         this.getViewModeText = this.getViewModeText.bind(this);
+        this.getTourModeText = this.getTourModeText.bind(this);
         this.getWinnerRender = this.getWinnerRender.bind(this);
         this.closePullCardModal = this.closePullCardModal.bind(this);
+        this.getTournamentWinner = this.getTournamentWinner.bind(this);
         this.playerHasEligibleCard = this.playerHasEligibleCard.bind(this);
     }
 
@@ -67,6 +74,7 @@ class GamePlay extends React.Component {
     componentDidUpdate(preProps) {
         if (preProps.gameId !== this.props.gameId) { // restart same game
             window.setTimeout(this.initGame, 10);
+            preProps.gameType === TOURNAMENS_GAME && this.setState({tourScores: []})
         }
     }
 
@@ -151,7 +159,7 @@ class GamePlay extends React.Component {
     setPlayers() {
         // in the future we will get players from server
         const playerObj = {type: PLAYER_TYPE, cards: [], name: this.props.playerName || PLAYER_TYPE, moves: []},
-            newPlayersArr = [{...playerObj}, {...playerObj, type: COMPUTER_TYPE, name: COMPUTER_TYPE}];
+            newPlayersArr = [{...playerObj}, {...playerObj, type: COMPUTER_TYPE, name: this.props.computerName}];
 
         this.setState({players: newPlayersArr});
     }
@@ -185,7 +193,9 @@ class GamePlay extends React.Component {
     chooseCard(cardIndex, color) {
         this.setState({activeTurn: false});
 
-        const {players, turn, heap, activeAction, twoInAction, lastAction} = this.state,
+        const {players, turn, heap, activeAction, twoInAction, lastAction, tourScores} = this.state,
+            {gameType} = this.props,
+            isTournament = gameType === TOURNAMENS_GAME,
             topCard = heap[heap.length - 1];
         let tempPlayers = [...players],
             tempHeap = [...heap],
@@ -221,7 +231,8 @@ class GamePlay extends React.Component {
                 ...(!tempCards.length && tempCard.type !== CARDS.PLUS ? {
                     winner: turn,
                     endTime: performance.now(),
-                    activeTurn: false
+                    activeTurn: false,
+                    tourScores: isTournament ? [...tourScores, this.getEndGameScore(turn)] : null
                 } : {
                     activeTurn: true
                 }),
@@ -232,6 +243,10 @@ class GamePlay extends React.Component {
         return false;
     }
 
+    getEndGameScore(winner) {
+        const {players} = this.state;
+        return {player: winner, score: players.reduce((acc, {cards}) => acc += cards.reduce((pre, card) => pre += getCardScore(card), 0), 0)};
+    }
     setEndTime() {
         this.setState({endTime: performance.now()});
     }
@@ -279,9 +294,9 @@ class GamePlay extends React.Component {
         const {stack} = this.state;
         let tempStack = [...stack];
 
-        let cardLoc = Math.ceil(Math.random() * (tempStack.length - 1)); // Every pull we shuffeling
+        let cardLoc = Math.floor(Math.random() * tempStack.length); // Every pull we shuffeling
         while (rquire === HEAP_TYPE && tempStack[cardLoc].color === UNCOLORED_COLOR) {
-            cardLoc = Math.ceil(Math.random() * (tempStack.length - 1));
+            cardLoc = Math.floor(Math.random() * tempStack.length);
         }
         const newCard = {...tempStack[cardLoc]};
         tempStack.splice(cardLoc, 1);
@@ -297,7 +312,7 @@ class GamePlay extends React.Component {
             newCards = players.map(() => []);
 
         for (let i = 0; i < 8 * playersCount; ++i) {
-            let cardLoc = Math.ceil(Math.random() * (tempStack.length - 1));
+            let cardLoc = Math.floor(Math.random() * tempStack.length);
             newCards[i % playersCount].push(tempStack[cardLoc]);
             tempStack.splice(cardLoc, 1);
         }
@@ -331,14 +346,36 @@ class GamePlay extends React.Component {
     getViewModeText(stats) {
         const {viewMode} = this.props;
         return (<span>
-                    if you want to watch step by step
-                    <span className="dialog__buttons__button" onClick={() => viewMode(stats)}>click here</span>
+                    <br/>
+                    if you want to watch this game step by step <br/>
+                    <span className="dialog__buttons__button" onClick={() => viewMode(stats)}>click here</span><br/>
+                </span>);
+    }
+    getTourModeText() {
+        const {tourScores, players} = this.state,
+            tournamentEnd = tourScores && tourScores.length === 3,
+            lastScore = tourScores && tourScores[tourScores.length - 1];
+        return (<span>
+                    {players[lastScore.player].name} has earned {lastScore.score} points
+                    {tournamentEnd && <h2>
+                            {players[this.getTournamentWinner()].type === PLAYER_TYPE && <div className="pyro"/>}
+                            {players[this.getTournamentWinner()].name} has won the tournament
+                        </h2>}
                 </span>);
     }
 
+    getTournamentWinner() {
+        const {players} = this.state,
+            scores = players.map((player, i) => this.getPlayerScore(i));
+
+        return scores.indexOf(Math.max(...scores));
+    }
+
     getWinnerRender() {
-        const {gameType, viewMode, endGameFn} = this.props,
-            {winner, players, startTime, endTime, heap} = this.state,
+        const {gameType, endGameFn} = this.props,
+            {winner, players, startTime, endTime, heap, tourScores} = this.state,
+            tournamentEnd = tourScores && tourScores.length === 3,
+            isRegular = gameType === REGULAR_GAME,
             winnerObj = players[winner];
 
         if (winner !== null) {
@@ -349,19 +386,29 @@ class GamePlay extends React.Component {
                 (winnerObj.type === PLAYER_TYPE ? <div key="pyro" className="pyro"/> : null),
                 <Dialog key="winDialog" isOpen title={`${winnerObj.name} has Won the game`}
                         cancelFn={() => endGameFn(stats)}
+                        noCancel={!isRegular &&  tourScores.length === 3}
                         description={<EndGameStats {...{
                             players,
                             startTime,
-                            endTime
-                        }}>{gameType === REGULAR_GAME && this.getViewModeText(stats)}</EndGameStats>}
-                        approveFunction={() => endGameFn(stats, true)}/>
+                            endTime,
+                            gameType,
+                            tournamentEnd,
+                            getPlayerScore: this.getPlayerScore
+                        }}>{isRegular ? this.getViewModeText(stats) : this.getTourModeText()}</EndGameStats>}
+                        approveFunction={() => isRegular ? endGameFn(stats, true) : (tournamentEnd ? endGameFn(stats) : this.initGame())}/>
             ];
         }
     }
 
+    getPlayerScore(player) {
+        const {tourScores} = this.state;
+        return tourScores ? tourScores.reduce((acc, {player : scorePlayer, score}) => acc += scorePlayer === player ? score : 0, 0) : 0
+    }
+
     render() {
-        const {endGameFn} = this.props,
-            {players, heap, winner, turn, notAllowed, activeAction, cantPullModal, activeTurn, startTime, endTime} = this.state;
+        const {endGameFn, gameType} = this.props,
+            {players, heap, winner, turn, notAllowed, activeAction, tourScores,
+                cantPullModal, activeTurn, startTime, endTime} = this.state;
 
         if (players[0] && players[0].moves.length) {
             const topCard = heap[heap.length - 1],
@@ -369,6 +416,8 @@ class GamePlay extends React.Component {
                 takiMode = activeAction === CARDS.TAKI,
                 deckProps = i => ({
                     activeTurn,
+                    gameType,
+                    score: this.getPlayerScore(i),
                     turn: i === turn,
                     chooseCard: this.chooseCard,
                     gameEnd: winner !== null,
@@ -380,15 +429,14 @@ class GamePlay extends React.Component {
 
             return (<div className="board">
                 <GameMenu players={players} startTime={startTime} endTime={endTime} setEndTime={this.setEndTime}
-                          endGameFn={endGameFn}/>
+                          endGameFn={endGameFn} gameNumber={tourScores ? tourScores.length + 1 : null}/>
                 {this.getWinnerRender()}
                 <Dialog approveFunction={this.closePullCardModal} title={getText('CantPullTitle')}
                         description={getText('CantPullDesc' + (!isPlayer ? 'NotPlayer' : (takiMode ? 'Taki' : '')))}
                         isOpen={cantPullModal} noCancel/>
                 {players.map((player, i) => <Deck key={i} {...player} {...deckProps(i)}/>)}
                 <div onClick={(isPlayer && !takiMode) ? this.pullFromStack : this.cantPullCard} className="pack stack">
-                    <div
-                        className={`card active ${isPlayer && activeTurn && (this.playerHasEligibleCard() ? '' : 'required')}`}/>
+                    <div className={`card active ${isPlayer && activeTurn && (this.playerHasEligibleCard() ? '' : 'required')}`}/>
                 </div>
                 <div className={`pack heap ${notAllowed ? 'not-allowed' : ''}`}>
                     {topCard && <div className="card" data-card-type={topCard.type} data-color={topCard.color}/>}

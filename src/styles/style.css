@@ -78,6 +78,7 @@ body {
     -o-transition: all ease-in-out .2s;
     transition: all ease-in-out .2s;
 }
+.menu li.tournament,
 .menu li.clock {
     cursor: default;
     font-size: 22px;
@@ -92,12 +93,17 @@ body {
 }
 
 li.clock::before,
+li.tournament::after,
 li.clock::after {
     content: "Turns ";
     display: block;
     font-weight: 300;
     font-size: .5em;
     margin-top: -3px;
+}
+
+li.tournament::after {
+    content: "Game";
 }
 li.clock::before {
     content: "Game time";
@@ -378,6 +384,9 @@ cursor: pointer;
     box-shadow:  0 0 0 0 red, 3px 3px 13px rgba(0,0,0,0.3);
     color: #0f2107;
 }
+.deck-stats h3 {
+    margin: 5px 0;
+}
 
 .deck.active .deck-stats {
     background: rgba(255,255,255,.9);
@@ -430,13 +439,12 @@ cursor: pointer;
     top: 50%;
 }
 .deck.player > .card.chosen {
-    top: -70%;
     opacity: 0;
-    -webkit-transform: rotate(540deg);
-    -moz-transform: rotate(540deg);
-    -ms-transform: rotate(540deg);
-    -o-transform: rotate(540deg);
-    transform: rotate(540deg);
+    -webkit-transform: rotate(540deg) translateY(150%);
+    -moz-transform: rotate(540deg) translateY(150%);
+    -ms-transform: rotate(540deg) translateY(150%);
+    -o-transform: rotate(540deg) translateY(150%);
+    transform: rotate(540deg) translateY(150%);
     -webkit-transition: all .6s;
     -moz-transition: all .6s;
     -ms-transition: all .6s;
@@ -445,13 +453,12 @@ cursor: pointer;
 }
 
 .deck.opp > .card.chosen {
-    top: 70%;
     opacity: 0;
-    -webkit-transform: rotateY(180deg);
-    -moz-transform: rotateY(180deg);
-    -ms-transform: rotateY(180deg);
-    -o-transform: rotateY(180deg);
-    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg) translateY(150%);
+    -moz-transform: rotateY(180deg) translateY(150%);
+    -ms-transform: rotateY(180deg) translateY(150%);
+    -o-transform: rotateY(180deg) translateY(150%);
+    transform: rotateY(180deg) translateY(150%);
     -webkit-transition: all .3s;
     -moz-transition: all .3s;
     -ms-transition: all .3s;
