@@ -7,7 +7,6 @@ import {
     ACTION_CHOOSE_CARD,
     ACTION_INIT_PACK,
     ACTION_PULL_CARD,
-    REGULAR_GAME,
     TOURNAMENS_GAME,
 } from '../helpers/constants';
 import {
@@ -22,6 +21,7 @@ import GameMenu from './gameMenu';
 import {getText} from "../modules/texts.mjs";
 import Dialog from "./dialog";
 import EndGameDialog from "./endGameDialog";
+import Heap from "./heap";
 
 class GamePlay extends React.Component {
     constructor(props) {
@@ -353,7 +353,7 @@ class GamePlay extends React.Component {
 
     render() {
         const {endGameFn, gameType} = this.props,
-            {players, heap, winner, turn, notAllowed, activeAction, tourScores,
+            {players, heap, winner, turn, activeAction, tourScores,
                 cantPullModal, activeTurn, startTime, endTime} = this.state;
 
         if (players[0] && players[0].moves.length) {
@@ -384,9 +384,7 @@ class GamePlay extends React.Component {
                 <div onClick={(isPlayer && !takiMode) ? this.pullFromStack : this.cantPullCard} className="pack stack">
                     <div className={`card active ${isPlayer && activeTurn && (this.playerHasEligibleCard() ? '' : 'required')}`}/>
                 </div>
-                <div className={`pack heap ${notAllowed ? 'not-allowed' : ''}`}>
-                    {topCard && <div className="card" data-card-type={topCard.type} data-color={topCard.color}/>}
-                </div>
+                <Heap heap={heap}/>
             </div>);
         }
         return <div>Loading...</div>

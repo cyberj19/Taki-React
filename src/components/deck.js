@@ -30,7 +30,7 @@ class Deck extends React.Component {
 
             let i = 0;
             for (; i < cards.length; ++i) {
-                if (newCards[i] && cards[i] && (newCards[i].color !== cards[i].color || newCards[i].type !== cards[i].type) )
+                if (!newCards[i] || !cards[i] || newCards[i].color !== cards[i].color || newCards[i].type !== cards[i].type)
                     break;
             }
             this.setState({cards: (isCardAdded ? newCards : cards).map((card, j) => ({...card, [isCardAdded ? 'isIn' : 'isOut']: j === i}))});

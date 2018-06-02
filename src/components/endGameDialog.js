@@ -1,6 +1,7 @@
 import React from "react";
+import Dialog from "./dialog";
 import EndGameStats from './endGameStats';
-import {getText} from "../modules/texts.mjs";
+
 import {ACTION_INIT_PACK, PLAYER_TYPE, REGULAR_GAME} from "../helpers/constants";
 
 class EndGameDialog extends React.Component {

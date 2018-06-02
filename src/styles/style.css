@@ -190,7 +190,10 @@ li.clock::before {
     width: 100%;
     height: 100%;
     margin: 0;
-
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: all .1s;
 }
 
 .card {
@@ -391,6 +394,11 @@ cursor: pointer;
     border-radius: 3px;
     box-shadow:  0 0 0 0 red, 3px 3px 13px rgba(0,0,0,0.3);
     color: #0f2107;
+}
+.player .deck-stats {
+
+    top: auto;
+    bottom: 1vw;
 }
 .deck-stats h3 {
     margin: 5px 0;
