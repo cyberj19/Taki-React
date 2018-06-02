@@ -194,7 +194,7 @@ li.clock::before {
     position: absolute;
     left: 0;
     top: 0;
-    transition: all .2s;
+    transition: all .15s;
 }
 
 .pack .card.in {
