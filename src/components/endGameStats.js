@@ -15,7 +15,6 @@ class EndGameStats extends React.Component {
             statsOpen: false,
             modalType: null,
         };
-
         this.getEndStats = this.getEndStats.bind(this);
     }
 
