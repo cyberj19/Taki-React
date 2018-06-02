@@ -19,9 +19,9 @@ import {
     CARDS,
 } from "../modules/cards.mjs";
 import GameMenu from './gameMenu';
-import EndGameStats from './endGameStats';
 import {getText} from "../modules/texts.mjs";
 import Dialog from "./dialog";
+import EndGameDialog from "./endGameDialog";
 
 class GamePlay extends React.Component {
     constructor(props) {
@@ -58,12 +58,9 @@ class GamePlay extends React.Component {
         this.pullFromStack = this.pullFromStack.bind(this);
         this.getPlayerScore = this.getPlayerScore.bind(this);
         this.isCardEligible = this.isCardEligible.bind(this);
-        this.getEndGameScore = this.getEndGameScore.bind(this);
-        this.getViewModeText = this.getViewModeText.bind(this);
-        this.getTourModeText = this.getTourModeText.bind(this);
+        this.calcEndGameScore = this.calcEndGameScore.bind(this);
         this.getWinnerRender = this.getWinnerRender.bind(this);
         this.closePullCardModal = this.closePullCardModal.bind(this);
-        this.getTournamentWinner = this.getTournamentWinner.bind(this);
         this.playerHasEligibleCard = this.playerHasEligibleCard.bind(this);
     }
 
@@ -84,8 +81,7 @@ class GamePlay extends React.Component {
 
             const {turn, players, lastAction} = this.state,
                 takeCards = window.setInterval(() => {
-                    const {twoInAction, activeAction, heap} = this.state,
-                        twoOn = activeAction === CARDS.TWO,
+                    const {twoInAction, heap} = this.state,
                         newCard = this.pullCard();
                     let tempTakenCardsArr = [...this.state.takenCardsArr],
                         newPlayers = [...players],
@@ -102,7 +98,6 @@ class GamePlay extends React.Component {
                             time: lastAction,
                             heapCard: {...heap[heap.length - 1]},
                             duration: performance.now() - lastAction,
-                            chosenCard: twoOn ? [...tempTakenCardsArr, {...newCard}] : {...newCard}
                         });
                         newPlayers[turn] = {...newPlayers[turn], cards: [...newCards, ...tempTakenCardsArr], moves: [...newMoves]};
                         window.clearInterval(takeCards);
@@ -212,7 +207,6 @@ class GamePlay extends React.Component {
                 duration: performance.now() - lastAction,
                 chosenCard: {...tempCard, ...{color: tempCard.color === UNCOLORED_COLOR ? (color || topCard.color) : tempCard.color}}
             });
-
             tempPlayers[turn].cards = tempCards;
             this.setState({players: [...tempPlayers], heap: tempHeap});
 
@@ -230,7 +224,7 @@ class GamePlay extends React.Component {
                     winner: turn,
                     endTime: performance.now(),
                     activeTurn: false,
-                    tourScores: isTournament ? [...tourScores, this.getEndGameScore(turn)] : null
+                    tourScores: isTournament ? [...tourScores, this.calcEndGameScore(turn)] : null
                 } : {
                     activeTurn: true
                 }),
@@ -241,10 +235,11 @@ class GamePlay extends React.Component {
         return false;
     }
 
-    getEndGameScore(winner) {
+    calcEndGameScore(winner) {
         const {players} = this.state;
         return {player: winner, score: players.reduce((acc, {cards}) => acc += cards.reduce((pre, card) => pre += getCardScore(card), 0), 0)};
     }
+
     setEndTime() {
         this.setState({endTime: performance.now()});
     }
@@ -305,7 +300,6 @@ class GamePlay extends React.Component {
     startGame() {
         const playersCount = this.state.players.length,
             {players, stack} = this.state; // init empty array for each player
-
         let tempStack = [...stack],
             newCards = players.map(() => []);
 
@@ -341,61 +335,15 @@ class GamePlay extends React.Component {
         });
     }
 
-    getViewModeText(stats) {
-        const {viewMode} = this.props;
-        return (<span>
-                    <br/>
-                    if you want to watch this game step by step <br/>
-                    <span className="dialog__buttons__button" onClick={() => viewMode(stats)}>click here</span><br/>
-                </span>);
-    }
-    getTourModeText() {
-        const {tourScores, players} = this.state,
-            tournamentEnd = tourScores && tourScores.length === 3,
-            lastScore = tourScores && tourScores[tourScores.length - 1];
-        return (<span>
-                    {players[lastScore.player].name} has earned {lastScore.score} points
-                    {tournamentEnd && <h2>
-                            {players[this.getTournamentWinner()].type === PLAYER_TYPE && <div className="pyro"/>}
-                            {players[this.getTournamentWinner()].name} has won the tournament
-                        </h2>}
-                </span>);
-    }
-
-    getTournamentWinner() {
-        const {players} = this.state,
-            scores = players.map((player, i) => this.getPlayerScore(i));
-
-        return scores.indexOf(Math.max(...scores));
-    }
-
     getWinnerRender() {
-        const {gameType, endGameFn} = this.props,
-            {winner, players, startTime, endTime, heap, tourScores} = this.state,
-            tournamentEnd = tourScores && tourScores.length === 3,
-            isRegular = gameType === REGULAR_GAME,
-            winnerObj = players[winner];
+        const {gameType, endGameFn, viewMode} = this.props,
+            {winner, players, startTime, endTime, heap, tourScores} = this.state;
 
-        if (winner !== null) {
-            const stats = [{type: ACTION_INIT_PACK, heap: [{...heap[0]}]}, ...players.map(({moves}) => moves)
-                .reduce((pre, move) => pre = [...pre, ...move]).sort((a, b) => a.time > b.time ? 1 : -1)];
-
-            return [
-                (winnerObj.type === PLAYER_TYPE ? <div key="pyro" className="pyro"/> : null),
-                <Dialog key="winDialog" isOpen title={`${winnerObj.name} has Won the game`}
-                        cancelFn={() => endGameFn(stats)}
-                        noCancel={!isRegular &&  tourScores.length === 3}
-                        description={<EndGameStats {...{
-                            players,
-                            startTime,
-                            endTime,
-                            gameType,
-                            tournamentEnd,
-                            getPlayerScore: this.getPlayerScore
-                        }}>{isRegular ? this.getViewModeText(stats) : this.getTourModeText()}</EndGameStats>}
-                        approveFunction={() => isRegular ? endGameFn(stats, true) : (tournamentEnd ? endGameFn(stats) : this.initGame())}/>
-            ];
-        }
+        return <EndGameDialog {...{gameType, viewMode, endGameFn, winner, players,
+                            startTime, endTime, heap, tourScores,
+                            getPlayerScore: this.getPlayerScore,
+                            initGame: this.initGame
+            }}/>
     }
 
     getPlayerScore(player) {
@@ -444,5 +392,4 @@ class GamePlay extends React.Component {
         return <div>Loading...</div>
     }
 }
-
 export default GamePlay;
