@@ -117,15 +117,13 @@ class GamePlay extends React.Component {
                         });
                     }
                     else {
-                        //newPlayers[turn] = {...newPlayers[turn], moves: [...newMoves]};
-
                         this.setState({
                             players: [...newPlayers],
                             twoInAction: twoInAction === 2 ? 0 : twoInAction - 1,
                             takenCardsArr: [...tempTakenCardsArr, {...newCard}]
                         });
                     }
-                }, 400);
+                }, 60);
         }
         else {
             this.cantPullCard();
