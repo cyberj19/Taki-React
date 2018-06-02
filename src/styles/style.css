@@ -187,13 +187,18 @@ li.clock::before {
     transform: translateY(-50%);
 }
 .pack .card {
+    opacity: 1;
     width: 100%;
     height: 100%;
     margin: 0;
     position: absolute;
     left: 0;
     top: 0;
-    transition: all .1s;
+    transition: all .2s;
+}
+
+.pack .card.in {
+    opacity: 0.1;
 }
 
 .card {
