@@ -21,7 +21,7 @@ class Heap extends React.Component {
         const {heap} = oldProps,
               {cards} = this.state;
 
-        heap.length !== cards.length && window.setTimeout(()=> this.setState({
+        heap.length !== cards.length && window.setTimeout(() => this.setState({
             cards: [...this.setCardsWithRotate(cards)]
         }), 10);
     }

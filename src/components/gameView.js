@@ -26,7 +26,6 @@ class GameView extends React.Component {
             heapCard = {...moves[0].heap[0]},
             newMoves = moves.filter(({type}) => type !== ACTION_INIT_PACK );
 
-
         this.setState({
             heapCard,
             players: [...players],
