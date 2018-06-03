@@ -27,7 +27,7 @@ class Heap extends React.Component {
     }
 
     setCardsWithRotate(cards) {
-        return cards.map((card, i) => card.rotate ? card : {...card, rotate: (Math.floor((Math.random() * 50 - 25) * (i / (i + 2)))), isIn: false})
+        return cards.map((card, i) => card.rotate ? card : {...card, rotate: (Math.floor((Math.random() * 50 - 25) * (i / (i + 10)))), isIn: false})
     }
 
     render() {

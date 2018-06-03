@@ -23,7 +23,7 @@ class Deck extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        let {cards} = this.props,
+        let {cards, viewMode} = this.props,
             newCards = [...newProps.cards];
         if (newCards.length !== cards.length && newCards.length !== this.state.cards.length) {
             const isCardAdded = newCards.length > cards.length;
@@ -33,7 +33,7 @@ class Deck extends React.Component {
                 if (!newCards[i] || !cards[i] || newCards[i].color !== cards[i].color || newCards[i].type !== cards[i].type)
                     break;
             }
-            this.setState({cards: (isCardAdded ? newCards : cards).map((card, j) => ({...card, [isCardAdded ? 'isIn' : 'isOut']: j === i}))});
+            this.setState({cards: (isCardAdded ? newCards : cards).map((card, j) => ({...card, [isCardAdded ? 'isIn' : 'isOut']: viewMode || !isCardAdded ? j === i : j >= i }))});
         }
     }
 
