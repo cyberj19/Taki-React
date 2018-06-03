@@ -354,7 +354,7 @@ class GamePlay extends React.Component {
 
     render() {
         const {endGameFn, gameType} = this.props,
-            {players, heap, winner, turn, activeAction, tourScores,
+            {players, heap, winner, turn, activeAction, tourScores, twoInAction,
                 cantPullModal, activeTurn, startTime, endTime} = this.state;
 
         if (players[0] && players[0].moves.length) {
@@ -383,6 +383,7 @@ class GamePlay extends React.Component {
                         isOpen={cantPullModal} noCancel/>
                 {players.map((player, i) => <Deck key={i} {...player} {...deckProps(i)}/>)}
                 <div onClick={(isPlayer && !takiMode) ? this.pullFromStack : this.cantPullCard} className="pack stack">
+                    {!!twoInAction && <span className="two-badge">{twoInAction}</span>}
                     <div className={`card active ${isPlayer && activeTurn && (this.playerHasEligibleCard() ? '' : 'required')}`}/>
                 </div>
                 <Heap heap={heap}/>

@@ -420,6 +420,22 @@ cursor: pointer;
     animation: redShadow linear 2s infinite;
 }
 
+.stack > .two-badge {
+    position: absolute;
+    right: .2vw;
+    bottom: .2vw;
+    height: 2vw;
+    line-height: 2vw;
+    font-weight: 700;
+    font-size: 1vw;
+    width: 2vw;
+    border-radius: 50%;
+    z-index: 3;
+    background: red;
+    border: 3px solid #FFF;
+    box-shadow: 2px 4px 9px 2px rgba(0,0,0,0.7);
+}
+
 @keyframes redShadow {
     0% {
         box-shadow: 0 0 0 3px transparent,0 0 9px 3px rgba(0,0,0,0.6);
