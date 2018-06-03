@@ -284,9 +284,8 @@ class GamePlay extends React.Component {
 
     pullCard(rquire) {
         const {stack} = this.state;
-        let tempStack = [...stack];
-
-        let cardLoc = Math.floor(Math.random() * tempStack.length); // Every pull we shuffeling
+        let tempStack = [...stack],
+            cardLoc = Math.floor(Math.random() * tempStack.length); // Every pull we shuffeling
         while (rquire === HEAP_TYPE && tempStack[cardLoc].color === UNCOLORED_COLOR) {
             cardLoc = Math.floor(Math.random() * tempStack.length);
         }
