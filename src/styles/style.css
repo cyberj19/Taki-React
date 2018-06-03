@@ -387,7 +387,7 @@ li.clock::before {
 }
 .stack > .card.active,
 .deck.player > .card.active {
-cursor: pointer;
+    cursor: pointer;
 }
 
 .deck-stats {
