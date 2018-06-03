@@ -137,7 +137,6 @@ class GamePlay extends React.Component {
 
     endTaki() {
         this.setState({activeTurn: false});
-
         const {heap} = this.state,
             topCard = heap[heap.length - 1];
 
@@ -293,7 +292,6 @@ class GamePlay extends React.Component {
         tempStack.splice(cardLoc, 1);
         this.setState({stack: tempStack});
         this.setStack();
-
         return newCard;
     };
 
