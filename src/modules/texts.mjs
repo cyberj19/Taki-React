@@ -12,7 +12,7 @@ const texts = {
     areYouSureDesc: 'After clicking "OK" you will lose the game',
     settingsModalTitle: 'You can edit your settings:',
     regularChooser: 'Regular Game',
-    tournamentChooserInfo: 'Play tournament game - you will play 3 games in a row and the winner will eb the one with the highest score',
+    tournamentChooserInfo: 'Play tournament game - you will play 3 games in a row and the winner will be the one with the highest score.',
     regularChooserInfo: 'Play regular TAKI game',
     CantPullTitle: 'Can\'t pull card right now.',
     CantPullDesc: 'Can\'t pull card right now, you probably have card choices before you pull new card',
