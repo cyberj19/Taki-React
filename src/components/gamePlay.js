@@ -164,7 +164,7 @@ class GamePlay extends React.Component {
         if (!forceInit && !!stack.length) return; // if stack isn't empty no need to set it again
 
         if (!forceInit && !!heap.length) { // if there is a heap already it will take the heap (and leave there only the top card)
-            this.setState({heap: heap.pop(), stack: heap});
+            this.setState({heap: [{...heap[heap.length - 1]}], stack: [...heap.slice(0, -1)]});
         }
         else { // there is a need to create a new stack from the constants
             let tmpStack = [];
@@ -283,7 +283,6 @@ class GamePlay extends React.Component {
     }
 
     pullCard(rquire) {
-        this.setStack();
         const {stack} = this.state;
         let tempStack = [...stack];
 
@@ -294,6 +293,8 @@ class GamePlay extends React.Component {
         const newCard = {...tempStack[cardLoc]};
         tempStack.splice(cardLoc, 1);
         this.setState({stack: tempStack});
+        this.setStack();
+
         return newCard;
     };
 

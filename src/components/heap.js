@@ -14,7 +14,7 @@ class Heap extends React.Component {
             {cards} = this.state;
 
         heap.length !== cards.length && this.setState({
-            cards: [...(heap.length !== cards.length ? [...cards, {...heap[heap.length - 1], isIn: true}] : [...cards.slice(0, -1)])]
+            cards: [...(heap.length > cards.length ? [...cards, {...heap[heap.length - 1], isIn: true}] : [...heap])]
         })
     }
     componentDidUpdate(oldProps) {
