@@ -1,7 +1,7 @@
 
 const texts = {
     gameChooserHeader: 'Choose game to begin:',
-    oneCardTotal: 'Total times that had 1 card',
+    oneCardTotal: 'Total times had 1 card',
     playerAverageTime: 'Average time per turn',
     playerTotalMoves: 'Total moves',
     tournamentChooser: 'Tournament Game',
