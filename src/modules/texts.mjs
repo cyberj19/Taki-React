@@ -17,7 +17,7 @@ const texts = {
     CantPullTitle: 'Can\'t pull card right now.',
     CantPullDesc: 'Can\'t pull card right now, you probably have card choices before you pull new card',
     CantPullDescTaki: 'Can\'t pull card during a TAKI move on.',
-    CantPullDescNotPlayer: 'Can\'t pull card not in your turn',
+    CantPullDescNotPlayer: 'Can\'t pull card not in your turn.',
     totalMoves: 'Total moves:',
     avgMoves: 'Average move time:',
     colorDialogTitle: 'Please choose color:',
