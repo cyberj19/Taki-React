@@ -8,7 +8,7 @@
     "start": "node server.js",
     "build-watch": "webpack --watch"
   },
-  "author": "Tomer Abenheimer, Jacob Roginski",
+  "author": "Tomer Abenheimer, Jacob Roginsky",
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.26.0",
